@@ -23,7 +23,7 @@
 #define LED_PIN 5
 
 // Button config
-#define BTN_MODE_PIN 2
+#define BTN_MODE_PIN 0
 
 // Include the effect classes
 // Note: These must be after the LED strip config
