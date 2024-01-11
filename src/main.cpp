@@ -46,7 +46,7 @@ int g_Brightness = 255;
 int g_PowerLimit = 900; // 900mW Power Limit
 
 // Button state tracking
-int patternMode = 7;
+int patternMode = 0;
 boolean btnModeState = 0;
 boolean lastBtnModeState = 0;
 
