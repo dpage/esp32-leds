@@ -1,15 +1,12 @@
 //+--------------------------------------------------------------------------
 //
+// Original copyright (https://github.com/davepl/DavesGarageLEDSeries):
+//
 // NightDriver - (c) 2018 Dave Plummer.  All Rights Reserved.
 //
-// File:        ledgfx.h
+// Later modified by Dave Page.
 //
-// Description:
-//
-//   LED Drawing Routines for Dave's Garage Tutorial series
-//
-// History:     OCt-18-2020     davepl      Created from main.cpp code
-//---------------------------------------------------------------------------
+//+--------------------------------------------------------------------------
 
 #pragma once
 
@@ -17,17 +14,11 @@
 #define FASTLED_INTERNAL
 #include <FastLED.h>
 
-#include <sys/time.h>                   // For time-of-day
+#include <sys/time.h> 
 
 // Utility Macros
-
 #define ARRAYSIZE(x) (sizeof(x)/sizeof(x[0]))
 #define TIMES_PER_SECOND(x) EVERY_N_MILLISECONDS(1000/x)
-
-//inline double RandomDouble()
-//{
-//    return random(UINT32_MAX) / (double) UINT32_MAX;
-//}
 
 inline float RandomFloat()
 {
@@ -46,7 +37,6 @@ inline double UnixTime()
 //
 // Returns a fraction of a color; abstracts the fadeToBlack out to this function in case we
 // want to improve the color math or do color correction all in one location at a later date.
-
 CRGB ColorFraction(CRGB colorIn, float fraction)
 {
   fraction = min(1.0f, fraction);
@@ -62,7 +52,6 @@ void DrawPixels(float fPos, float count, CRGB color)
   int iPos = fPos;
 
   // Blend (add) in the color of the first partial pixel
-
   if (remaining > 0.0f)
   {
     FastLED.leds()[iPos++] += ColorFraction(color, amtFirstPixel);
@@ -70,7 +59,6 @@ void DrawPixels(float fPos, float count, CRGB color)
   }
 
   // Now draw any full pixels in the middle
-
   while (remaining > 1.0f)
   {
     FastLED.leds()[iPos++] += color;
@@ -78,7 +66,6 @@ void DrawPixels(float fPos, float count, CRGB color)
   }
 
   // Draw tail pixel, up to a single full pixel
-
   if (remaining > 0.0f)
   {
     FastLED.leds()[iPos] += ColorFraction(color, remaining);

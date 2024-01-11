@@ -1,16 +1,12 @@
 //+--------------------------------------------------------------------------
 //
+// Original copyright (https://github.com/davepl/DavesGarageLEDSeries):
+//
 // NightDriver - (c) 2020 Dave Plummer.  All Rights Reserved.
 //
-// File:        
+// Later modified by Dave Page.
 //
-// Description:
-//
-//   
-//
-// History:     Sep-15-2020     davepl      Created
-//
-//---------------------------------------------------------------------------
+//+--------------------------------------------------------------------------
 
 #include <Arduino.h>
 #define FASTLED_INTERNAL
@@ -27,17 +23,21 @@ static const CRGB TwinkleColors [] =
     CRGB::Yellow
 };
 
-void DrawTwinkle()
+class TwinkleEffect
 {
-    static int passCount = 0;
-
-    FastLED.clear();
-
-    if (passCount++ == NUM_LEDS/4)
+public:
+    void Draw()
     {
-        passCount = 0;
-        FastLED.clear(false);
+        static int passCount = 0;
+
+        FastLED.clear();
+
+        if (passCount++ == NUM_LEDS / 4)
+        {
+            passCount = 0;
+            FastLED.clear(false);
+        }
+        FastLED.leds()[random(NUM_LEDS)] = TwinkleColors[random(0, ARRAYSIZE(TwinkleColors))];
+        delay(50);
     }
-    FastLED.leds()[random(NUM_LEDS)] = TwinkleColors[random(0, ARRAYSIZE(TwinkleColors))];
-    delay(100);       
-}
+};
