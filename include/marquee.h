@@ -13,6 +13,8 @@
 #define FASTLED_INTERNAL
 #include <FastLED.h>
 
+#include "main.h"
+
 class MarqueeEffect
 {
 private:

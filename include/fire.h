@@ -12,6 +12,7 @@
 #define FASTLED_INTERNAL
 #include <FastLED.h>
 
+#include "main.h"
 #include "ledgfx.h"
 
 
@@ -61,7 +62,7 @@ public:
         delete [] heat;
     }
 
-    void DrawFire()
+    void Draw()
     {
         FastLED.clear();
         

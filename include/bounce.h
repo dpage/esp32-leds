@@ -17,6 +17,7 @@
 using namespace std;
 #include <vector> // Use the C++ resizable array
 
+#include "main.h"
 #include "ledgfx.h"
 
 extern CRGB g_LEDs[];

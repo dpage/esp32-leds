@@ -12,6 +12,8 @@
 #define FASTLED_INTERNAL
 #include <FastLED.h>
 
+#include "main.h"
+
 extern CRGB g_LEDs[];
 
 class CometEffect

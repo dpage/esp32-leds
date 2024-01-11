@@ -12,6 +12,7 @@
 #define FASTLED_INTERNAL
 #include <FastLED.h>
 
+#include "main.h"
 #include "ledgfx.h"
 
 static const CRGB TwinkleColors [] = 
