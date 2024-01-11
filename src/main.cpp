@@ -39,7 +39,10 @@ CRGB g_LEDs[NUM_LEDS] = {0};
 
 // OLED display on the heltec_wifi_kit_32_V3
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C g_OLED(U8G2_R2, OLED_RESET, OLED_CLOCK, OLED_DATA);
-int g_lineHeight = 0;
+int g_lineHeight12 = 0;
+int g_lineHeight15 = 0;
+int g_width = 0;
+int g_height = 0;
 
 // LED power management constants
 int g_Brightness = 255;
@@ -89,8 +92,12 @@ void setup()
     // Setup the OLED screen
     g_OLED.begin();
     g_OLED.clear();
+    g_OLED.setFont(u8g2_font_profont12_tf);
+    g_lineHeight12 = g_OLED.getFontAscent() - g_OLED.getFontDescent();
     g_OLED.setFont(u8g2_font_profont15_tf);
-    g_lineHeight = g_OLED.getFontAscent() - g_OLED.getFontDescent(); // Descent is a negative number so we add it to the total
+    g_lineHeight15 = g_OLED.getFontAscent() - g_OLED.getFontDescent();
+    g_width = g_OLED.getWidth();
+    g_height = g_OLED.getHeight();
 
     // Setup the LED strip and power management (warning LED and throttling)
     // Note: Power management should be removed if using an external PSU for
@@ -141,11 +148,11 @@ void loop()
             break;
         case 2:
             fxBallsMirror.Draw();
-            effect = "BallsM";
+            effect = "Balls Mirror";
             break;
         case 3:
             fxBallsMirrorFade.Draw();
-            effect = "BallsM Fade";
+            effect = "Balls Mirror Fade";
             break;
         case 4:
             fxComet.Draw();
@@ -157,7 +164,7 @@ void loop()
             break;
         case 6:
             fxMarqueeMirror.Draw();
-            effect = "MarqueeM";
+            effect = "Marquee Mirror";
             break;
         case 7:
             fxFireOut.DrawFire();
@@ -190,15 +197,33 @@ void loop()
         // Update the OLED display
         EVERY_N_MILLISECONDS(250)
         {
+            int linePos = 0;
+
             g_OLED.clearBuffer();
-            g_OLED.setCursor(0, g_lineHeight);
+
+            g_OLED.setFont(u8g2_font_profont15_tf);
+
+            linePos = g_lineHeight15;
+            g_OLED.setCursor(0, linePos);
+            g_OLED.printf("%s", effect);
+
+            linePos = linePos + 1;
+            g_OLED.drawHLine(0, linePos, g_width);
+
+            g_OLED.setFont(u8g2_font_profont12_tf);
+
+            linePos = linePos + g_lineHeight12 + 3;
+            g_OLED.setCursor(0, linePos);
             g_OLED.printf("FPS  : %u", FastLED.getFPS());
-            g_OLED.setCursor(0, g_lineHeight * 2);
+
+            linePos = linePos + g_lineHeight12;
+            g_OLED.setCursor(0, linePos);
             g_OLED.printf("Power: %u mW", calculate_unscaled_power_mW(g_LEDs, 4));
-            g_OLED.setCursor(0, g_lineHeight * 3);
+
+            linePos = linePos + g_lineHeight12;
+            g_OLED.setCursor(0, linePos);
             g_OLED.printf("Brite: %d", calculate_max_brightness_for_power_mW(g_Brightness, g_PowerLimit));
-            g_OLED.setCursor(0, g_lineHeight * 4);
-            g_OLED.printf("Mode : %s", effect);
+
             g_OLED.sendBuffer();
         }
     }
