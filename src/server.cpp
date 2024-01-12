@@ -13,21 +13,24 @@
 WebServer server(80);
 
 
+// Format a message for debug/display
+String getRequestMsg(int status)
+{
+    String msg;
+
+    msg += String(status) + ": ";
+    msg += String((server.method() == HTTP_GET) ? "GET" : "POST") + " ";
+    msg += server.uri() + "\n";
+
+    return msg;
+}
+
 // 404's
 void handleNotFound()
 {
-    String message = "File Not Found\n\n";
-    message += "URI: ";
-    message += server.uri();
-    message += "\nMethod: ";
-    message += (server.method() == HTTP_GET) ? "GET" : "POST";
-    message += "\nArguments: ";
-    message += server.args();
-    message += "\n";
-    for (uint8_t i = 0; i < server.args(); i++)
-    {
-        message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
-    }
+    String message = getRequestMsg(404);
+
+    Serial.print(String("Server: ") + message);
     server.send(404, "text/plain", message);
 }
 
@@ -48,6 +51,8 @@ void handleRoot()
     }
 
     webApp += "</body></html>";
+
+    Serial.print(String("Server: ") + getRequestMsg(200));
     server.send(200, "text/html", webApp);
 }
 
@@ -57,7 +62,10 @@ void handleEffect()
     int effectId = server.pathArg(0).toInt();
 
     if (effectId >= GetNumEffects())
+    {
         handleNotFound();
+        return;
+    }
 
     SetEffectId(effectId);
 
@@ -75,12 +83,16 @@ void handleEffect()
     }
 
     webApp += "</body></html>";
+
+    Serial.print(String("Server: ") + getRequestMsg(200));
+    Serial.printf("Server: Effect link clicked. Now running: %s\n", GetEffectName());
     server.send(200, "text/html", webApp);
 }
 
 // The server loop
 void ServerLoop(void *pvParameters)
 {
+    Serial.printf("Server: Starting mDNS with hostname: %s...\n", WIFI_HOSTNAME);
     if (MDNS.begin(WIFI_HOSTNAME))
     {
         MDNS.addService("http", "tcp", 80);
@@ -88,6 +100,7 @@ void ServerLoop(void *pvParameters)
 
     for (;;)
     {
+        Serial.printf("Server: Starting webserver...\n");
         server.enableCORS();
         server.on("/", handleRoot);
         server.on(UriBraces("/e/{}"), handleEffect);
@@ -99,7 +112,7 @@ void ServerLoop(void *pvParameters)
             server.handleClient();
             // Add a small delay to let the watchdog process
             // https://stackoverflow.com/questions/66278271/task-watchdog-got-triggered-the-tasks-did-not-reset-the-watchdog-in-time
-            delay(25);
+            delay(2);
         }
     }
 }

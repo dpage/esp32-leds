@@ -59,7 +59,10 @@ void checkButtons()
         if (btnModeState != lastBtnModeState)
         {
             if (btnModeState == LOW)
-                NextEffect();
+            {
+                NextEffect(); 
+                Serial.printf("ESP32 : Next effect button pushed. Now running: %s\n", GetEffectName());
+            }
 
             // Save the current state as the last state, for next time through the loop
             lastBtnModeState = btnModeState;
@@ -72,6 +75,8 @@ void checkButtons()
 void initWiFi()
 {
     int countdown = 10;
+
+    Serial.printf("ESP32 : Initialising WIFI... ");
 
     WiFi.mode(WIFI_STA);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -103,15 +108,25 @@ void initWiFi()
 
         g_OLED.sendBuffer();
 
+        Serial.printf("%d ", countdown);
+
         delay(1000);
         countdown--;
     }
+
+    Serial.printf("\nESP32 : SSID: %s, hostname: %s, IP: %s\n", WIFI_SSID, WIFI_HOSTNAME, WiFi.localIP().toString());
 }
 
 
 // Setup the microcontroller
 void setup()
 {
+    // Serial
+    Serial.begin(115200);
+    while (!Serial) { }
+    Serial.println("ESP32 : Startup");
+    Serial.printf("ESP32 : Configured for %d LEDs on pin %d.\n", NUM_LEDS, LED_PIN);
+
     // Setup the GPIO pins
     pinMode(LED_BUILTIN, OUTPUT);
     pinMode(LED_PIN, OUTPUT);
