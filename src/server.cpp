@@ -8,6 +8,7 @@
 #include "server.h"
 #include "secrets.h"
 
+#include "main.h"
 #include "leds.h"
 
 WebServer server(80);
@@ -92,8 +93,8 @@ void handleEffect()
 // The server loop
 void ServerLoop(void *pvParameters)
 {
-    Serial.printf("Server: Starting mDNS with hostname: %s...\n", WIFI_HOSTNAME);
-    if (MDNS.begin(WIFI_HOSTNAME))
+    Serial.printf("Server: Starting mDNS with hostname: %s...\n", GetHostname());
+    if (MDNS.begin(GetHostname().c_str()))
     {
         MDNS.addService("http", "tcp", 80);
     }

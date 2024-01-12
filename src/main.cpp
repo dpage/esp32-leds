@@ -73,6 +73,30 @@ void checkButtons()
 }
 
 
+String getHexByte(byte x)
+{
+    char hex[2] = "";
+    ltoa(x, hex, 16);
+    
+    return(String(hex));
+}
+
+
+// Generate a hostname
+String GetHostname()
+{
+    byte mac[6];
+    String hostname = "leds-";
+
+    WiFi.macAddress(mac);
+
+    hostname += getHexByte(mac[3]);
+    hostname += getHexByte(mac[4]);
+    hostname += getHexByte(mac[5]);
+
+    return hostname;
+}
+
 // Setup WIFI
 void initWiFi()
 {
@@ -116,7 +140,8 @@ void initWiFi()
         countdown--;
     }
 
-    Serial.printf("\nESP32 : SSID: %s, hostname: %s, IP: %s\n", WIFI_SSID, WIFI_HOSTNAME, WiFi.localIP().toString());
+    Serial.printf("\nESP32 : SSID: %s, hostname: %s, IP: %s\n", 
+            WIFI_SSID, GetHostname(), WiFi.localIP().toString());
 }
 
 
@@ -158,7 +183,7 @@ void setup()
     FastLED.setMaxPowerInMilliWatts(g_PowerLimit);
 
     // Setup for OTA
-    ArduinoOTA.setHostname(WIFI_HOSTNAME);
+    ArduinoOTA.setHostname(GetHostname().c_str());
     ArduinoOTA
         .onStart([]()
                  {
@@ -235,7 +260,7 @@ void loop()
 
         linePos = linePos + g_lineHeight10;
         g_OLED.setCursor(0, linePos);
-        g_OLED.printf("mDNS : %s.local", WIFI_HOSTNAME);
+        g_OLED.printf("mDNS : %s.local", GetHostname());
 
         linePos = linePos + g_lineHeight10;
         g_OLED.setCursor(0, linePos);

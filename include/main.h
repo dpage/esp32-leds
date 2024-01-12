@@ -15,5 +15,4 @@
 // Button config
 #define BTN_MODE_PIN 0
 
-// Button handle
-void checkButtons();
+String GetHostname();
