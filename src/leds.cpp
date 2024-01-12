@@ -5,8 +5,21 @@
 #include "leds.h"
 
 // Effect info
-extern const char *effects;
-extern int effectId;
+const char *effects[] = {
+    "Balls",
+    "Balls Fade",
+    "Balls Mirror",
+    "Balls Mirror Fade",
+    "Comet",
+    "Marquee",
+    "Marquee Mirror",
+    "Fire Out",
+    "Fire In",
+    "FireX Out",
+    "FireX In",
+    "Twinkle",
+};
+int effectId = 0;
 
 // LED power management constants
 extern int g_Brightness;
@@ -18,6 +31,41 @@ extern int g_PowerLimit; // 900mW Power Limit
 #include "marquee.h"
 #include "twinkle.h"
 #include "fire.h"
+
+int GetNumEffects()
+{
+    return sizeof(effects) / sizeof(effects[0]);
+}
+
+int GetEffectId()
+{
+    return effectId;
+}
+
+
+const char *GetEffectName()
+{
+    return effects[effectId];
+}
+
+
+const char *GetEffectNameById(int id)
+{
+    return effects[id];
+}
+
+
+void SetEffectId(int id) {
+    effectId = id;
+}
+
+void NextEffect()
+{
+    effectId++;
+    if (effectId >= GetNumEffects())
+        effectId = 0;
+}
+
 
 // The main rendering loop
 void LedLoop(void *pvParameters)

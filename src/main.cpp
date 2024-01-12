@@ -39,24 +39,7 @@ int g_height = 0;
 int g_Brightness = 255;
 int g_PowerLimit = 900; // 900mW Power Limit
 
-// Effect state tracking
-const char *effects[] = {
-    "Balls",
-    "Balls Fade",
-    "Balls Mirror",
-    "Balls Mirror Fade",
-    "Comet",
-    "Marquee",
-    "Marquee Mirror",
-    "Fire Out",
-    "Fire In",
-    "FireX Out",
-    "FireX In",
-    "Twinkle",
-};
-
-int effectId = 0;
-const char *effect;
+// Button state tracking
 boolean btnModeState = 0;
 boolean lastBtnModeState = 0;
 
@@ -76,12 +59,9 @@ void checkButtons()
         if (btnModeState != lastBtnModeState)
         {
             if (btnModeState == LOW)
-            {
-                effectId++;
-                if (effectId == 12)
-                    effectId = 0;
-            }
-            // save the current state as the last state, for next time through the loop
+                NextEffect();
+
+            // Save the current state as the last state, for next time through the loop
             lastBtnModeState = btnModeState;
         }
     }
@@ -180,7 +160,7 @@ void loop()
 
         linePos = g_lineHeight15;
         g_OLED.setCursor(0, linePos);
-        g_OLED.printf("%s", effects[effectId]);
+        g_OLED.printf("%s", GetEffectName());
 
         linePos = linePos + 1;
         g_OLED.drawHLine(0, linePos, g_width);

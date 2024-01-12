@@ -8,11 +8,10 @@
 #include "server.h"
 #include "secrets.h"
 
+#include "leds.h"
+
 WebServer server(80);
 
-// Effect info
-extern const char *effects;
-extern int effectId;
 
 // 404's
 void handleNotFound()
@@ -38,14 +37,14 @@ void handleRoot()
     String webApp = "<html>";
     webApp += "<head><title>ESP32 LEDs</title>";
     webApp += "</head><body>";
-    webApp += "<h1>Current effect: " + String(effects[effectId]) + "</h1>";
+    webApp += "<h1>Current effect: " + String(GetEffectName()) + "</h1>";
 
-    for (int i = 0; i < sizeof(effects) / sizeof(effects[0]); i++)
+    for (int i = 0; i < GetNumEffects(); i++)
     {
-        if (i == effectId)
-            webApp += "<b><a href=\"/e/" + String(i) + "\">" + String(effects[i]) + "</b><br/>";
+        if (i == GetEffectId())
+            webApp += "<b><a href=\"/e/" + String(i) + "\">" + String(GetEffectNameById(i)) + "</b><br/>";
         else
-            webApp += "<a href=\"/e/" + String(i) + "\">" + String(effects[i]) + "<br/>";
+            webApp += "<a href=\"/e/" + String(i) + "\">" + String(GetEffectNameById(i)) + "<br/>";
     }
 
     webApp += "</body></html>";
@@ -55,23 +54,24 @@ void handleRoot()
 // Change the effect
 void handleEffect()
 {
-    int newEffect = server.pathArg(0).toInt();
+    int effectId = server.pathArg(0).toInt();
 
-    effectId = newEffect;
-    if (effectId >= sizeof(effects) / sizeof(effects[0]))
+    if (effectId >= GetNumEffects())
         handleNotFound();
+
+    SetEffectId(effectId);
 
     String webApp = "<html>";
     webApp += "<head><title>ESP32 LEDs</title>";
     webApp += "</head><body>";
-    webApp += "<h1>Effect set to: " + String(effects[effectId]) + "</h1>";
+    webApp += "<h1>Effect set to: " + String(GetEffectName()) + "</h1>";
 
-    for (int i = 0; i < sizeof(effects) / sizeof(effects[0]); i++)
+    for (int i = 0; i < GetNumEffects(); i++)
     {
-        if (i == effectId)
-            webApp += "<b><a href=\"/e/" + String(i) + "\">" + String(effects[i]) + "</b><br/>";
+        if (i == GetEffectId())
+            webApp += "<b><a href=\"/e/" + String(i) + "\">" + String(GetEffectNameById(i)) + "</b><br/>";
         else
-            webApp += "<a href=\"/e/" + String(i) + "\">" + String(effects[i]) + "<br/>";
+            webApp += "<a href=\"/e/" + String(i) + "\">" + String(GetEffectNameById(i)) + "<br/>";
     }
 
     webApp += "</body></html>";
