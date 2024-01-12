@@ -9,6 +9,7 @@
 //+--------------------------------------------------------------------------
 
 #include <Arduino.h>
+#include <ArduinoOTA.h>
 #include <U8g2lib.h>
 #define FASTLED_INTERNAL
 #include <FastLED.h>
@@ -19,6 +20,7 @@
 
 #include "leds.h"
 #include "server.h"
+
 
 // Threads
 TaskHandle_t tLeds;
@@ -124,7 +126,7 @@ void setup()
     // Serial
     Serial.begin(115200);
     while (!Serial) { }
-    Serial.println("ESP32 : Startup");
+    Serial.printf("ESP32 : Startup, firmware version %s.\n", FIRMWARE_VERSION);
     Serial.printf("ESP32 : Configured for %d LEDs on pin %d.\n", NUM_LEDS, LED_PIN);
 
     // Setup the GPIO pins
@@ -154,6 +156,39 @@ void setup()
     FastLED.setBrightness(g_Brightness);
     set_max_power_indicator_LED(LED_BUILTIN);
     FastLED.setMaxPowerInMilliWatts(g_PowerLimit);
+
+    // Setup for OTA
+    ArduinoOTA.setHostname(WIFI_HOSTNAME);
+    ArduinoOTA
+        .onStart([]()
+                 {
+      String type;
+      if (ArduinoOTA.getCommand() == U_FLASH)
+        type = "sketch";
+      else // U_SPIFFS
+        type = "filesystem";
+
+      // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
+      Serial.println("ESP32 : Start updating " + type); })
+        .onEnd([]()
+               { Serial.println("\nESP32 : End"); })
+        .onProgress([](unsigned int progress, unsigned int total)
+                    { Serial.printf("ESP32 : Progress: %u%%\r", (progress / (total / 100))); })
+        .onError([](ota_error_t error)
+                 {
+      Serial.printf("Error[%u]: ", error);
+      if (error == OTA_AUTH_ERROR)
+          Serial.println("ESP32 : Auth Failed");
+      else if (error == OTA_BEGIN_ERROR)
+          Serial.println("ESP32 : Begin Failed");
+      else if (error == OTA_CONNECT_ERROR)
+          Serial.println("ESP32 : Connect Failed");
+      else if (error == OTA_RECEIVE_ERROR)
+          Serial.println("ESP32 : Receive Failed");
+      else if (error == OTA_END_ERROR)
+          Serial.println("ESP32 : End Failed"); });
+
+    ArduinoOTA.begin();
 
     // Create the threads
     xTaskCreatePinnedToCore(LedLoop, "LEDs", 10000, NULL, 1, &tLeds, 0);
@@ -202,11 +237,18 @@ void loop()
         g_OLED.setCursor(0, linePos);
         g_OLED.printf("mDNS : %s.local", WIFI_HOSTNAME);
 
+        linePos = linePos + g_lineHeight10;
+        g_OLED.setCursor(0, linePos);
+        g_OLED.printf("Ver  : %s", FIRMWARE_VERSION);
+
         g_OLED.sendBuffer();
     }
 
     // Have we had any button presses?
     checkButtons();
+
+    // OTA?
+    ArduinoOTA.handle();
 }
 
 
