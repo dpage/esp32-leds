@@ -5,10 +5,8 @@
 #include <uri/UriBraces.h>
 #include <ESPmDNS.h>
 
-#include "server.h"
-#include "secrets.h"
-
 #include "main.h"
+#include "network.h"
 #include "leds.h"
 
 WebServer server(80);
@@ -93,7 +91,7 @@ void handleEffect()
 // The server loop
 void ServerLoop(void *pvParameters)
 {
-    Serial.printf("Server: Starting mDNS with hostname: %s...\n", GetHostname());
+    Serial.printf("Server: Starting mDNS with hostname: %s.local...\n", GetHostname());
     if (MDNS.begin(GetHostname().c_str()))
     {
         MDNS.addService("http", "tcp", 80);

@@ -15,6 +15,8 @@
 
 #include "main.h"
 
+extern CRGB g_LEDs[];
+
 class MarqueeEffect
 {
 private:

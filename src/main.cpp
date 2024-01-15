@@ -13,13 +13,13 @@
 #include <U8g2lib.h>
 #define FASTLED_INTERNAL
 #include <FastLED.h>
-#include <WiFi.h>
 
 #include "main.h"
-#include "secrets.h"
 
+#include "network.h"
 #include "leds.h"
 #include "server.h"
+
 
 
 // Threads
@@ -44,6 +44,70 @@ int g_PowerLimit = 900; // 900mW Power Limit
 // Button state tracking
 boolean btnModeState = 0;
 boolean lastBtnModeState = 0;
+
+
+// Display a page of data on the OLED
+void oledDisplay(const char *title, const char *line1, const char *line2, const char *line3, const char *line4, const char *line5, const char *line6)
+{
+    int linePos = 0;
+
+    g_OLED.clearBuffer();
+
+    g_OLED.setFont(u8g2_font_profont15_tf);
+
+    linePos = g_lineHeight15;
+    g_OLED.setCursor(0, linePos);
+    g_OLED.printf(title);
+
+    linePos = linePos + 1;
+    g_OLED.drawHLine(0, linePos, g_width);
+
+    g_OLED.setFont(u8g2_font_profont10_tf);
+
+    linePos = linePos + g_lineHeight10 + 3;
+    if (line1 != NULL)
+    {
+        g_OLED.setCursor(0, linePos);
+        g_OLED.printf(line1);
+    }
+
+    linePos = linePos + g_lineHeight10;
+    if (line2 != NULL)
+    {
+        g_OLED.setCursor(0, linePos);
+        g_OLED.printf(line2);
+    }
+
+    linePos = linePos + g_lineHeight10;
+    if (line3 != NULL)
+    {
+        g_OLED.setCursor(0, linePos);
+        g_OLED.printf(line3);
+    }
+
+    linePos = linePos + g_lineHeight10;
+    if (line4 != NULL)
+    {
+        g_OLED.setCursor(0, linePos);
+        g_OLED.printf(line4);
+    }
+
+    linePos = linePos + g_lineHeight10;
+    if (line5 != NULL)
+    {
+        g_OLED.setCursor(0, linePos);
+        g_OLED.printf(line5);
+    }
+
+    linePos = linePos + g_lineHeight10;
+    if (line6 != NULL)
+    {
+        g_OLED.setCursor(0, linePos);
+        g_OLED.printf(line6);
+    }
+
+    g_OLED.sendBuffer();
+}
 
 
 // Check and update the button state
@@ -73,81 +137,11 @@ void checkButtons()
 }
 
 
-String getHexByte(byte x)
-{
-    char hex[2] = "";
-    ltoa(x, hex, 16);
-    
-    return(String(hex));
-}
-
-
-// Generate a hostname
-String GetHostname()
-{
-    byte mac[6];
-    String hostname = "leds-";
-
-    WiFi.macAddress(mac);
-
-    hostname += getHexByte(mac[3]);
-    hostname += getHexByte(mac[4]);
-    hostname += getHexByte(mac[5]);
-
-    return hostname;
-}
-
-// Setup WIFI
-void initWiFi()
-{
-    int countdown = 10;
-
-    Serial.printf("ESP32 : Initialising WIFI... ");
-
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-
-    while (WiFi.status() != WL_CONNECTED && countdown >= 0)
-    {
-        int linePos = 0;
-
-        g_OLED.clearBuffer();
-
-        g_OLED.setFont(u8g2_font_profont15_tf);
-
-        linePos = g_lineHeight15;
-        g_OLED.setCursor(0, linePos);
-        g_OLED.printf("WIFI Connecting...");
-
-        linePos = linePos + 1;
-        g_OLED.drawHLine(0, linePos, g_width);
-
-        g_OLED.setFont(u8g2_font_profont12_tf);
-
-        linePos = linePos + g_lineHeight12 + 3;
-        g_OLED.setCursor(0, linePos);
-        g_OLED.printf("SSID   : %s", WIFI_SSID);
-
-        linePos = linePos + g_lineHeight12;
-        g_OLED.setCursor(0, linePos);
-        g_OLED.printf("Waiting: %d", countdown);
-
-        g_OLED.sendBuffer();
-
-        Serial.printf("%d ", countdown);
-
-        delay(1000);
-        countdown--;
-    }
-
-    Serial.printf("\nESP32 : SSID: %s, hostname: %s, IP: %s\n", 
-            WIFI_SSID, GetHostname(), WiFi.localIP().toString());
-}
-
-
 // Setup the microcontroller
 void setup()
 {
+    delay(5);
+
     // Serial
     Serial.begin(115200);
     while (!Serial) { }
@@ -170,6 +164,21 @@ void setup()
     g_lineHeight15 = g_OLED.getFontAscent() - g_OLED.getFontDescent();
     g_width = g_OLED.getWidth();
     g_height = g_OLED.getHeight();
+
+    int countdown = 3;
+
+    // Pause for WPS setup
+    delay(1000);
+    while (countdown >= 0)
+    {
+        char msg[12];
+        snprintf(msg, 12, "Waiting: %d", countdown);
+
+        oledDisplay("Hold PRG for WPS", msg);
+
+        delay(1000);
+        countdown--;
+    }
 
     // Network
     initWiFi();
@@ -227,46 +236,16 @@ void loop()
     // Update the OLED display
     EVERY_N_MILLISECONDS(250)
     {
-        int linePos = 0;
+        char msg1[64], msg2[64], msg3[64], msg4[64], msg5[64], msg6[64];
 
-        g_OLED.clearBuffer();
+        snprintf(msg1, 64, "FPS  : %u", FastLED.getFPS());
+        snprintf(msg2, 64, "Power: %u mW", calculate_unscaled_power_mW(g_LEDs, 4));
+        snprintf(msg3, 64, "Brite: %d", calculate_max_brightness_for_power_mW(g_Brightness, g_PowerLimit));
+        snprintf(msg4, 64, "IP   : %s", GetLocalIp());
+        snprintf(msg5, 64, "mDNS : %s.local", GetHostname());
+        snprintf(msg6, 64, "Ver  : %s", FIRMWARE_VERSION);
 
-        g_OLED.setFont(u8g2_font_profont15_tf);
-
-        linePos = g_lineHeight15;
-        g_OLED.setCursor(0, linePos);
-        g_OLED.printf("%s", GetEffectName());
-
-        linePos = linePos + 1;
-        g_OLED.drawHLine(0, linePos, g_width);
-
-        g_OLED.setFont(u8g2_font_profont10_tf);
-
-        linePos = linePos + g_lineHeight10 + 3;
-        g_OLED.setCursor(0, linePos);
-        g_OLED.printf("FPS  : %u", FastLED.getFPS());
-
-        linePos = linePos + g_lineHeight10;
-        g_OLED.setCursor(0, linePos);
-        g_OLED.printf("Power: %u mW", calculate_unscaled_power_mW(g_LEDs, 4));
-
-        linePos = linePos + g_lineHeight10;
-        g_OLED.setCursor(0, linePos);
-        g_OLED.printf("Brite: %d", calculate_max_brightness_for_power_mW(g_Brightness, g_PowerLimit));
-
-        linePos = linePos + g_lineHeight10;
-        g_OLED.setCursor(0, linePos);
-        g_OLED.printf("IP   : %s", WiFi.localIP().toString());
-
-        linePos = linePos + g_lineHeight10;
-        g_OLED.setCursor(0, linePos);
-        g_OLED.printf("mDNS : %s.local", GetHostname());
-
-        linePos = linePos + g_lineHeight10;
-        g_OLED.setCursor(0, linePos);
-        g_OLED.printf("Ver  : %s", FIRMWARE_VERSION);
-
-        g_OLED.sendBuffer();
+        oledDisplay(GetEffectName(), msg1, msg2, msg3, msg4, msg5, msg6);
     }
 
     // Have we had any button presses?

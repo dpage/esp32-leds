@@ -1,3 +1,6 @@
+#ifndef _main_h
+#define _main_h
+
 // Main
 
 // Firmward version
@@ -15,4 +18,6 @@
 // Button config
 #define BTN_MODE_PIN 0
 
-String GetHostname();
+void oledDisplay(const char *title, const char *line1 = 0, const char *line2 = 0, const char *line3 = 0, const char *line4 = 0, const char *line5 = 0, const char *line6 = 0);
+
+#endif

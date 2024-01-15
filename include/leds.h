@@ -1,3 +1,6 @@
+#ifndef _leds_h
+#define _leds_h
+
 // LEDs
 
 void LedLoop(void *pvParameters);
@@ -7,3 +10,5 @@ const char *GetEffectName();
 const char *GetEffectNameById(int id);
 void SetEffectId(int id);
 void NextEffect();
+
+#endif
