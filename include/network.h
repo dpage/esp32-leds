@@ -5,6 +5,7 @@
 
 void initWiFi();
 String GetHostname();
-String GetLocalIp();
+String GetLocalIP();
+String GetSSID();
 
 #endif

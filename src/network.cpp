@@ -3,7 +3,9 @@
 #include "esp_wps.h"
 
 #include "main.h"
+
 #include "network.h"
+#include "oled.h"
 
 // WiFi
 #define ESP_WPS_MODE WPS_TYPE_PBC
@@ -41,9 +43,15 @@ String GetHostname()
 
 
 // Get the local IP address
-String GetLocalIp()
+String GetLocalIP()
 {
     return WiFi.localIP().toString();
+}
+
+// Get the SSID
+String GetSSID()
+{
+    return WiFi.SSID();
 }
 
 

@@ -1,6 +1,6 @@
 // LEDs
 
-#include <WiFi.h>
+#include "main.h"
 
 #include "leds.h"
 

@@ -6,6 +6,8 @@
 #include <ESPmDNS.h>
 
 #include "main.h"
+
+#include "server.h"
 #include "network.h"
 #include "leds.h"
 
