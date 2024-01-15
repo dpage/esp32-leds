@@ -4,7 +4,7 @@
 // Main
 
 // Firmward version
-#define FIRMWARE_VERSION "0.1"
+#define FIRMWARE_VERSION "0.2"
 
 // OLED config
 #define OLED_CLOCK 18
