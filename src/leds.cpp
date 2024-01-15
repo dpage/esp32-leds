@@ -1,5 +1,7 @@
 // LEDs
 
+#include <Preferences.h>
+
 #include "main.h"
 
 #include "leds.h"
@@ -20,11 +22,6 @@ const char *effects[] = {
     "Twinkle",
 };
 int effectId = 0;
-
-// LED power management constants
-extern int g_Brightness;
-extern int g_PowerLimit; // 900mW Power Limit
-
 
 #include "bounce.h"
 #include "comet.h"
@@ -55,8 +52,21 @@ const char *GetEffectNameById(int id)
 }
 
 
-void SetEffectId(int id) {
+void saveEffect() 
+{
+    Preferences preferences;
+
+    Serial.printf("Server: Saving last effect: %d\n", effectId);
+
+    preferences.begin("ESP32-LEDs", false);
+    preferences.putInt("effectId", effectId);
+    preferences.end();
+}
+
+void SetEffectId(int id) 
+{
     effectId = id;
+    saveEffect();
 }
 
 void NextEffect()
@@ -64,6 +74,32 @@ void NextEffect()
     effectId++;
     if (effectId >= GetNumEffects())
         effectId = 0;
+
+    saveEffect();
+}
+
+
+// Initialise the LEDs
+void initLEDs()
+{
+    // Setup the LED strip and power management (warning LED and throttling)
+    // Note: Power management should be removed if using an external PSU for
+    //       the LED strips. This is just to prevent blowing out USB power.
+    FastLED.addLeds<WS2812B, LED_PIN, GRB>(g_LEDs, g_NumLeds);
+    FastLED.setBrightness(g_Brightness);
+    set_max_power_indicator_LED(LED_BUILTIN);
+    FastLED.setMaxPowerInMilliWatts(g_PowerLimit);
+
+    // Load the last effect
+    Preferences preferences;
+    preferences.begin("ESP32-LEDs", true);
+    effectId = preferences.getInt("effectId", 0);
+    preferences.end();
+
+    // Clear everything
+    FastLED.show(g_Brightness);
+
+    Serial.printf("Server: Loaded last effect: %d\n", effectId);
 }
 
 
@@ -71,23 +107,23 @@ void NextEffect()
 void LedLoop(void *pvParameters)
 {
     // Instantiate our effects
-    BouncingBallEffect fxBalls(NUM_LEDS, 3, 0, false, 8.0);
-    BouncingBallEffect fxBallsFade(NUM_LEDS, 3, 64, false, 8.0);
-    BouncingBallEffect fxBallsMirror(NUM_LEDS, 3, 0, true, 8.0);
-    BouncingBallEffect fxBallsMirrorFade(NUM_LEDS, 3, 64, true, 8.0);
+    BouncingBallEffect fxBalls(g_NumLeds, 3, 0, false, 8.0);
+    BouncingBallEffect fxBallsFade(g_NumLeds, 3, 64, false, 8.0);
+    BouncingBallEffect fxBallsMirror(g_NumLeds, 3, 0, true, 8.0);
+    BouncingBallEffect fxBallsMirrorFade(g_NumLeds, 3, 64, true, 8.0);
 
-    CometEffect fxComet;
+    CometEffect fxComet(g_NumLeds);
 
-    MarqueeEffect fxMarquee(false);
-    MarqueeEffect fxMarqueeMirror(true);
+    MarqueeEffect fxMarquee(g_NumLeds, false);
+    MarqueeEffect fxMarqueeMirror(g_NumLeds, true);
 
-    FireEffect fxFireOut(NUM_LEDS, 30, 100, 3, 2, false, true);
-    FireEffect fxFireIn(NUM_LEDS, 30, 100, 3, 2, true, true);
+    FireEffect fxFireOut(g_NumLeds, 30, 100, 3, 2, false, true);
+    FireEffect fxFireIn(g_NumLeds, 30, 100, 3, 2, true, true);
 
-    FireEffect fxFireXOut(NUM_LEDS, 50, 300, 30, 12, false, true);
-    FireEffect fxFireXIn(NUM_LEDS, 50, 300, 30, 12, true, true);
+    FireEffect fxFireXOut(g_NumLeds, 50, 300, 30, 12, false, true);
+    FireEffect fxFireXIn(g_NumLeds, 50, 300, 30, 12, true, true);
 
-    TwinkleEffect fxTwinkle;
+    TwinkleEffect fxTwinkle(g_NumLeds);
 
     for (;;)
     {

@@ -4,6 +4,7 @@
 #include <WebServer.h>
 #include <uri/UriBraces.h>
 #include <ESPmDNS.h>
+#include <Preferences.h>
 
 #include "main.h"
 
@@ -12,6 +13,7 @@
 #include "leds.h"
 
 WebServer server(80);
+Preferences preferences;
 
 
 // Format a message for debug/display
@@ -38,6 +40,8 @@ void handleNotFound()
 // Home page
 void handleRoot()
 {
+    Serial.print(String("Server: ") + getRequestMsg(200));
+
     String webApp = "<html>";
     webApp += "<head><title>ESP32 LEDs</title>";
     webApp += "</head><body>";
@@ -53,9 +57,57 @@ void handleRoot()
 
     webApp += "</body></html>";
 
-    Serial.print(String("Server: ") + getRequestMsg(200));
     server.send(200, "text/html", webApp);
 }
+
+// Setup page
+void handleSetup()
+{
+    boolean reboot = false;
+
+    Serial.print(String("Server: ") + getRequestMsg(200));
+
+    // Handle arguments
+    preferences.begin("ESP32-LEDs", false);
+    for (uint8_t i = 0; i < server.args(); i++)
+    {
+        if (server.hasArg("nLeds"))
+        {
+            Serial.printf("Server: Setting LED count to: %d\n", atoi(server.arg("nLeds").c_str()));
+            preferences.putInt("nLeds", atoi(server.arg("nLeds").c_str()));
+            g_NumLeds = atoi(server.arg("nLeds").c_str());
+            reboot = true;
+        }
+    }
+
+    String webApp = "<html>";
+    webApp += "<head><title>ESP32 LEDs - Setup</title>";
+    webApp += "</head><body>";
+    webApp += "<h1>ESP32 LEDs - Setup</h1>";
+
+    webApp += "<form method=\"POST\">";
+    webApp += "<label for=\"nLeds\">Number of LEDs:</label><br>";
+    webApp += "<input type=\"text\" id=\"nLeds\" name=\"nLeds\" value=\"" + String(g_NumLeds) + "\"><br>";
+    webApp += "<input type = \"submit\" value = \"Submit\">";
+    webApp += "</form>";
+
+    if (reboot) {
+        webApp += "<h2>Rebooting...</h2>";
+    }
+
+    webApp += "</body></html>";
+
+    preferences.end();
+
+    server.send(200, "text/html", webApp);
+    if (reboot)
+    {
+        delay(3);
+        Serial.println("Server: Rebooting to apply configuration changes...");
+        ESP.restart();
+    }
+}
+
 
 // Change the effect
 void handleEffect()
@@ -104,6 +156,7 @@ void ServerLoop(void *pvParameters)
         Serial.printf("Server: Starting webserver...\n");
         server.enableCORS();
         server.on("/", handleRoot);
+        server.on("/setup", handleSetup);
         server.on(UriBraces("/e/{}"), handleEffect);
         server.onNotFound(handleNotFound);
         server.begin();

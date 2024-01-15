@@ -3,6 +3,7 @@
 
 // LEDs
 
+void initLEDs();
 void LedLoop(void *pvParameters);
 int GetNumEffects();
 int GetEffectId();

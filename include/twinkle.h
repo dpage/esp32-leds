@@ -26,6 +26,15 @@ static const CRGB TwinkleColors [] =
 
 class TwinkleEffect
 {
+private:
+    int _nLeds;
+
+public:
+    TwinkleEffect(int leds)
+        : _nLeds(leds)
+    {
+    }
+
 public:
     void Draw()
     {
@@ -33,12 +42,12 @@ public:
 
         FastLED.clear();
 
-        if (passCount++ == NUM_LEDS / 4)
+        if (passCount++ == _nLeds / 4)
         {
             passCount = 0;
             FastLED.clear(false);
         }
-        FastLED.leds()[random(NUM_LEDS)] = TwinkleColors[random(0, ARRAYSIZE(TwinkleColors))];
+        FastLED.leds()[random(_nLeds)] = TwinkleColors[random(0, ARRAYSIZE(TwinkleColors))];
         delay(50);
     }
 };

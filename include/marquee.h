@@ -20,11 +20,13 @@ extern CRGB g_LEDs[];
 class MarqueeEffect
 {
 private:
+    int _nLeds;
     bool _bMirrored;
 
 public:
-    MarqueeEffect(boolean bmirrored = false)
-        : _bMirrored(bmirrored)
+    MarqueeEffect(int leds, boolean bmirrored = false)
+        : _nLeds(leds),
+          _bMirrored(bmirrored)
     {
     }
 
@@ -40,16 +42,16 @@ public:
 
             if (_bMirrored)
             {
-                for (int i = 0; i < (NUM_LEDS + 1) / 2; i++)
+                for (int i = 0; i < (_nLeds + 1) / 2; i++)
                 {
                     g_LEDs[i] = c.setHue(k);
-                    g_LEDs[NUM_LEDS - 1 - i] = c.setHue(k);
+                    g_LEDs[_nLeds - 1 - i] = c.setHue(k);
                     k += 8;
                 }
             }
             else
             {
-                for (int i = 0; i < NUM_LEDS; i++)
+                for (int i = 0; i < _nLeds; i++)
                     g_LEDs[i] = c.setHue(k += 8);
             }
 
@@ -58,15 +60,15 @@ public:
 
             if (_bMirrored)
             {
-                for (int i = scroll % 5; i < NUM_LEDS / 2; i += 5)
+                for (int i = scroll % 5; i < _nLeds / 2; i += 5)
                 {
                     g_LEDs[i] = CRGB::Black;
-                    g_LEDs[NUM_LEDS - 1 - i] = CRGB::Black;
+                    g_LEDs[_nLeds - 1 - i] = CRGB::Black;
                 }
             }
             else
             {
-                for (int i = scroll % 5; i < NUM_LEDS - 1; i += 5)
+                for (int i = scroll % 5; i < _nLeds - 1; i += 5)
                 {
                     g_LEDs[i] = CRGB::Black;
                 }

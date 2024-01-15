@@ -13,6 +13,7 @@
 
 #define FASTLED_INTERNAL
 #include <FastLED.h>
+#include <Preferences.h>
 
 #include "main.h"
 
@@ -27,7 +28,8 @@ TaskHandle_t tLeds;
 TaskHandle_t tServer;
 
 // Frame buffer for FastLED
-CRGB g_LEDs[NUM_LEDS] = {0};
+int g_NumLeds = DEFAULT_NUM_LEDS;
+CRGB g_LEDs[DEFAULT_NUM_LEDS] = {0};
 
 // LED power management constants
 int g_Brightness = 255;
@@ -70,11 +72,17 @@ void setup()
 {
     delay(5);
 
+    // Number of LEDs
+    Preferences preferences;
+    preferences.begin("ESP32-LEDs", true);
+    g_NumLeds = preferences.getInt("nLeds", DEFAULT_NUM_LEDS);
+    preferences.end();
+
     // Serial
     Serial.begin(115200);
     while (!Serial) { }
     Serial.printf("ESP32 : Startup, firmware version %s.\n", FIRMWARE_VERSION);
-    Serial.printf("ESP32 : Configured for %d LEDs on pin %d.\n", NUM_LEDS, LED_PIN);
+    Serial.printf("ESP32 : Configured for %d LEDs on pin %d.\n", g_NumLeds, LED_PIN);
 
     // Setup the GPIO pins
     pinMode(LED_BUILTIN, OUTPUT);
@@ -99,13 +107,8 @@ void setup()
     // Network
     initWiFi();
 
-    // Setup the LED strip and power management (warning LED and throttling)
-    // Note: Power management should be removed if using an external PSU for
-    //       the LED strips. This is just to prevent blowing out USB power.
-    FastLED.addLeds<WS2812B, LED_PIN, GRB>(g_LEDs, NUM_LEDS);
-    FastLED.setBrightness(g_Brightness);
-    set_max_power_indicator_LED(LED_BUILTIN);
-    FastLED.setMaxPowerInMilliWatts(g_PowerLimit);
+    // LEDs
+    initLEDs();
 
     // Setup for OTA
     ArduinoOTA.setHostname(GetHostname().c_str());

@@ -18,7 +18,15 @@ extern CRGB g_LEDs[];
 
 class CometEffect
 {
+private:
+    int _nLeds;
+
 public:
+    CometEffect(int leds)
+        : _nLeds(leds)
+    {
+    }
+
     void Draw()
     {
         const byte fadeAmt = 128;
@@ -32,14 +40,14 @@ public:
         hue += deltaHue;
 
         iPos += iDirection;
-        if (iPos == (NUM_LEDS - cometSize) || iPos == 0)
+        if (iPos == (_nLeds - cometSize) || iPos == 0)
             iDirection *= -1;
 
         for (int i = 0; i < cometSize; i++)
             g_LEDs[iPos + i].setHue(hue);
 
         // Randomly fade the LEDs
-        for (int j = 0; j < NUM_LEDS; j++)
+        for (int j = 0; j < _nLeds; j++)
             if (random(10) > 5)
                 g_LEDs[j] = g_LEDs[j].fadeToBlackBy(fadeAmt);
     }
