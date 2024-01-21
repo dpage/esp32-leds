@@ -20,6 +20,12 @@ const char *effects[] = {
     "FireX Out",
     "FireX In",
     "Twinkle",
+    "Solid White",
+    "Solid Red",
+    "Solid Green",
+    "Solid Blue",
+    "Solid Purple",
+    "Solid Orange"
 };
 int effectId = 0;
 
@@ -28,6 +34,7 @@ int effectId = 0;
 #include "marquee.h"
 #include "twinkle.h"
 #include "fire.h"
+#include "solid.h"
 
 int GetNumEffects()
 {
@@ -125,6 +132,13 @@ void LedLoop(void *pvParameters)
 
     TwinkleEffect fxTwinkle(g_NumLeds);
 
+    SolidEffect fxWhite(g_NumLeds, CRGB::White);
+    SolidEffect fxRed(g_NumLeds, CRGB::Red);
+    SolidEffect fxGreen(g_NumLeds, CRGB::Green);
+    SolidEffect fxBlue(g_NumLeds, CRGB::Blue);
+    SolidEffect fxPurple(g_NumLeds, CRGB::Purple);
+    SolidEffect fxOrange(g_NumLeds, CRGB::Orange);
+
     for (;;)
     {
         // Draw the appropriate pattern
@@ -165,6 +179,24 @@ void LedLoop(void *pvParameters)
             break;
         case 11:
             fxTwinkle.Draw();
+            break;
+        case 12:
+            fxWhite.Draw();
+            break;
+        case 13:
+            fxRed.Draw();
+            break;
+        case 14:
+            fxGreen.Draw();
+            break;
+        case 15:
+            fxBlue.Draw();
+            break;
+        case 16:
+            fxPurple.Draw();
+            break;
+        case 17:
+            fxOrange.Draw();
             break;
         }
 
