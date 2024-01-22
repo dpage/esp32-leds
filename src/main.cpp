@@ -31,13 +31,39 @@ TaskHandle_t tServer;
 int g_NumLeds = DEFAULT_NUM_LEDS;
 CRGB g_LEDs[DEFAULT_NUM_LEDS] = {0};
 
-// LED power management constants
-int g_Brightness = 255;
-int g_PowerLimit = 900; // 900mW Power Limit
+// Power management
+boolean g_ExternalPower = false;
 
 // Button state tracking
 boolean btnModeState = 0;
 boolean lastBtnModeState = 0;
+
+
+// Check to see if we're running on external power or not, and enable safety
+// measures as appropriate
+void checkPowerState()
+{
+    boolean externalPower = digitalRead(EPWR_PIN);
+
+    if (externalPower == g_ExternalPower)
+        return;
+
+    if (externalPower == LOW)
+    {
+        Serial.printf("ESP32 : Power mode: USB.\n");
+        g_ExternalPower = false;
+        set_max_power_indicator_LED(LED_BUILTIN);
+        FastLED.setMaxPowerInMilliWatts(900);
+    }
+    else
+    {
+        Serial.printf("ESP32 : Power mode: External.\n");
+        digitalWrite(LED_BUILTIN, LOW);
+        g_ExternalPower = true;
+        set_max_power_indicator_LED(0);
+        FastLED.setMaxPowerInMilliWatts(25000);
+    }
+}
 
 
 // Check and update the button state
@@ -88,6 +114,7 @@ void setup()
     pinMode(LED_BUILTIN, OUTPUT);
     pinMode(LED_PIN, OUTPUT);
     pinMode(BTN_MODE_PIN, INPUT_PULLUP);
+    pinMode(EPWR_PIN, INPUT_PULLDOWN);
 
     initOLED();
 
@@ -108,6 +135,7 @@ void setup()
     initWiFi();
 
     // LEDs
+    checkPowerState();
     initLEDs();
 
     // Setup for OTA
@@ -152,20 +180,24 @@ void setup()
 // User interaction handled here.
 void loop()
 {
+    // Check power supply state
+    checkPowerState();
+
     // Update the OLED display
     EVERY_N_MILLISECONDS(250)
     {
-        char msg1[64], msg2[64], msg3[64], msg4[64], msg5[64];
+        char msg1[64], msg2[64], msg3[64], msg4[64], msg5[64], msg6[64];
 
         snprintf(msg1, 64, "Stats: %ufps, %umW",
                             FastLED.getFPS(), 
                             calculate_unscaled_power_mW(g_LEDs, 4));
-        snprintf(msg2, 64, "SSID : %s", GetSSID());
-        snprintf(msg3, 64, "IP   : %s", GetLocalIP());
-        snprintf(msg4, 64, "mDNS : %s.local", GetHostname());
-        snprintf(msg5, 64, "Ver  : %s", FIRMWARE_VERSION);
+        snprintf(msg2, 64, "PWR  : %s", g_ExternalPower ? "External" : "USB");
+        snprintf(msg3, 64, "SSID : %s", GetSSID());
+        snprintf(msg4, 64, "IP   : %s", GetLocalIP());
+        snprintf(msg5, 64, "mDNS : %s.local", GetHostname());
+        snprintf(msg6, 64, "Ver  : %s", FIRMWARE_VERSION);
 
-        oledDisplay(GetEffectName(), msg1, msg2, msg3, msg4, msg5);
+        oledDisplay(GetEffectName(), msg1, msg2, msg3, msg4, msg5, msg6);
     }
 
     // Have we had any button presses?

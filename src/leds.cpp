@@ -93,9 +93,7 @@ void initLEDs()
     // Note: Power management should be removed if using an external PSU for
     //       the LED strips. This is just to prevent blowing out USB power.
     FastLED.addLeds<WS2812B, LED_PIN, GRB>(g_LEDs, g_NumLeds);
-    FastLED.setBrightness(g_Brightness);
-    set_max_power_indicator_LED(LED_BUILTIN);
-    FastLED.setMaxPowerInMilliWatts(g_PowerLimit);
+    FastLED.setBrightness(255);
 
     // Load the last effect
     Preferences preferences;
@@ -104,7 +102,7 @@ void initLEDs()
     preferences.end();
 
     // Clear everything
-    FastLED.show(g_Brightness);
+    FastLED.show();
 
     Serial.printf("Server: Loaded last effect: %s\n", GetEffectName());
 }
@@ -201,6 +199,6 @@ void LedLoop(void *pvParameters)
         }
 
         // Display the frame
-        FastLED.show(g_Brightness);
+        FastLED.show();
     }
 }

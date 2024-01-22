@@ -9,9 +9,8 @@
 // LED strip config
 #define DEFAULT_NUM_LEDS 300
 #define LED_PIN 5
+#define EPWR_PIN 47
 extern int g_NumLeds;
-extern int g_Brightness;
-extern int g_PowerLimit;
 
 // Button config
 #define BTN_MODE_PIN 0
