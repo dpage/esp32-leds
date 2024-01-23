@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <WiFi.h>
+#include <Preferences.h>
 #include "esp_wps.h"
 
 #include "main.h"
@@ -37,6 +38,11 @@ String GetHostname()
     hostname += getHexByte(mac[3]);
     hostname += getHexByte(mac[4]);
     hostname += getHexByte(mac[5]);
+
+    Preferences preferences;
+    preferences.begin("ESP32-LEDs", true);
+    hostname = preferences.getString("Hostname", hostname);
+    preferences.end();
 
     return hostname;
 }

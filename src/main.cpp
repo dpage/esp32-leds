@@ -101,7 +101,7 @@ void setup()
     // Number of LEDs
     Preferences preferences;
     preferences.begin("ESP32-LEDs", true);
-    g_NumLeds = preferences.getInt("nLeds", DEFAULT_NUM_LEDS);
+    g_NumLeds = preferences.getInt("Leds", DEFAULT_NUM_LEDS);
     preferences.end();
 
     // Serial

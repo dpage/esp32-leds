@@ -15,7 +15,6 @@
 WebServer server(80);
 Preferences preferences;
 
-
 // Format a message for debug/display
 String getRequestMsg(int status)
 {
@@ -71,29 +70,40 @@ void handleSetup()
     preferences.begin("ESP32-LEDs", false);
     for (uint8_t i = 0; i < server.args(); i++)
     {
-        if (server.hasArg("nLeds"))
+        if (server.hasArg("Leds") && atoi(server.arg("Leds").c_str()) != g_NumLeds)
         {
-            Serial.printf("Server: Setting LED count to: %d\n", atoi(server.arg("nLeds").c_str()));
-            preferences.putInt("nLeds", atoi(server.arg("nLeds").c_str()));
-            g_NumLeds = atoi(server.arg("nLeds").c_str());
+            Serial.printf("Server: Setting LED count to: %d\n", atoi(server.arg("Leds").c_str()));
+            preferences.putInt("Leds", atoi(server.arg("Leds").c_str()));
+            g_NumLeds = atoi(server.arg("Leds").c_str());
+            reboot = true;
+        }
+        if (server.hasArg("Hostname") && server.arg("Hostname") != GetHostname())
+        {
+            Serial.printf("Server: Setting hostname to: %d\n", server.arg("Hostname").c_str());
+            preferences.putString("Hostname", server.arg("Hostname"));
             reboot = true;
         }
     }
 
     String webApp = "<html>";
     webApp += "<head><title>ESP32 LEDs - Setup</title>";
+
+    if (reboot)
+        webApp += "<meta http-equiv=\"refresh\" content=\"10\">";
+
     webApp += "</head><body>";
     webApp += "<h1>ESP32 LEDs - Setup</h1>";
 
     webApp += "<form method=\"POST\">";
-    webApp += "<label for=\"nLeds\">Number of LEDs:</label><br>";
-    webApp += "<input type=\"text\" id=\"nLeds\" name=\"nLeds\" value=\"" + String(g_NumLeds) + "\"><br>";
+    webApp += "<label for=\"Leds\">Number of LEDs:</label><br>";
+    webApp += "<input type=\"text\" id=\"Leds\" name=\"Leds\" value=\"" + String(g_NumLeds) + "\"><br>";
+    webApp += "<label for=\"Hostname\">Hostname:</label><br>";
+    webApp += "<input type=\"text\" id=\"Hostname\" name=\"Hostname\" value=\"" + GetHostname() + "\"><br>";
     webApp += "<input type = \"submit\" value = \"Submit\">";
     webApp += "</form>";
 
-    if (reboot) {
+    if (reboot)
         webApp += "<h2>Rebooting...</h2>";
-    }
 
     webApp += "</body></html>";
 
