@@ -8,12 +8,11 @@ class SolidEffect
 {
 private:
     int _nLeds;
-    CRGB _colour;
+    CHSV _colour = CHSV(0, 255, 255);
 
 public:
-    SolidEffect(int leds, CRGB colour)
-        : _nLeds(leds),
-          _colour(colour)
+    SolidEffect(int leds)
+        : _nLeds(leds)
     {
     }
 
@@ -26,5 +25,14 @@ public:
         {
             FastLED.leds()[i] = _colour;
         }
+
+        // Next colour
+        int hue = _colour.hue;
+        if (hue == 255)
+            hue = 0;
+        else
+            hue++;
+
+        _colour.hue = hue;
     }
 };

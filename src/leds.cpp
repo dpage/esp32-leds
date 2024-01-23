@@ -20,12 +20,7 @@ const char *effects[] = {
     "FireX Out",
     "FireX In",
     "Twinkle",
-    "Solid White",
-    "Solid Red",
-    "Solid Green",
-    "Solid Blue",
-    "Solid Purple",
-    "Solid Orange",
+    "Rainbow Solid",
     "Rainbow Ping Pong",
     "All Off"};
 int effectId = 0;
@@ -132,12 +127,7 @@ void LedLoop(void *pvParameters)
 
     TwinkleEffect fxTwinkle(g_NumLeds);
 
-    SolidEffect fxSolidWhite(g_NumLeds, CRGB::White);
-    SolidEffect fxSolidRed(g_NumLeds, CRGB::Red);
-    SolidEffect fxSolidGreen(g_NumLeds, CRGB::Green);
-    SolidEffect fxSolidBlue(g_NumLeds, CRGB::Blue);
-    SolidEffect fxSolidPurple(g_NumLeds, CRGB::Purple);
-    SolidEffect fxSolidOrange(g_NumLeds, CRGB::Orange);
+    SolidEffect fxSolid(g_NumLeds);
 
     PingPongEffect fxPingPong(g_NumLeds);
 
@@ -183,28 +173,16 @@ void LedLoop(void *pvParameters)
             fxTwinkle.Draw();
             break;
         case 12:
-            fxSolidWhite.Draw();
+            fxSolid.Draw();
             break;
         case 13:
-            fxSolidRed.Draw();
-            break;
-        case 14:
-            fxSolidGreen.Draw();
-            break;
-        case 15:
-            fxSolidBlue.Draw();
-            break;
-        case 16:
-            fxSolidPurple.Draw();
-            break;
-        case 17:
-            fxSolidOrange.Draw();
-            break;
-        case 18:
             fxPingPong.Draw();
             break;
-        case 19:
+        case 14:
             FastLED.clear();
+            break;
+        default:
+            SetEffectId(0);
             break;
         }
 
