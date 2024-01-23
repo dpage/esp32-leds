@@ -26,8 +26,8 @@ const char *effects[] = {
     "Solid Blue",
     "Solid Purple",
     "Solid Orange",
-    "All Off"
-};
+    "Rainbow Ping Pong",
+    "All Off"};
 int effectId = 0;
 
 #include "bounce.h"
@@ -36,6 +36,7 @@ int effectId = 0;
 #include "twinkle.h"
 #include "fire.h"
 #include "solid.h"
+#include "pingpong.h"
 
 int GetNumEffects()
 {
@@ -131,12 +132,14 @@ void LedLoop(void *pvParameters)
 
     TwinkleEffect fxTwinkle(g_NumLeds);
 
-    SolidEffect fxWhite(g_NumLeds, CRGB::White);
-    SolidEffect fxRed(g_NumLeds, CRGB::Red);
-    SolidEffect fxGreen(g_NumLeds, CRGB::Green);
-    SolidEffect fxBlue(g_NumLeds, CRGB::Blue);
-    SolidEffect fxPurple(g_NumLeds, CRGB::Purple);
-    SolidEffect fxOrange(g_NumLeds, CRGB::Orange);
+    SolidEffect fxSolidWhite(g_NumLeds, CRGB::White);
+    SolidEffect fxSolidRed(g_NumLeds, CRGB::Red);
+    SolidEffect fxSolidGreen(g_NumLeds, CRGB::Green);
+    SolidEffect fxSolidBlue(g_NumLeds, CRGB::Blue);
+    SolidEffect fxSolidPurple(g_NumLeds, CRGB::Purple);
+    SolidEffect fxSolidOrange(g_NumLeds, CRGB::Orange);
+
+    PingPongEffect fxPingPong(g_NumLeds);
 
     for (;;)
     {
@@ -180,24 +183,27 @@ void LedLoop(void *pvParameters)
             fxTwinkle.Draw();
             break;
         case 12:
-            fxWhite.Draw();
+            fxSolidWhite.Draw();
             break;
         case 13:
-            fxRed.Draw();
+            fxSolidRed.Draw();
             break;
         case 14:
-            fxGreen.Draw();
+            fxSolidGreen.Draw();
             break;
         case 15:
-            fxBlue.Draw();
+            fxSolidBlue.Draw();
             break;
         case 16:
-            fxPurple.Draw();
+            fxSolidPurple.Draw();
             break;
         case 17:
-            fxOrange.Draw();
+            fxSolidOrange.Draw();
             break;
         case 18:
+            fxPingPong.Draw();
+            break;
+        case 19:
             FastLED.clear();
             break;
         }
