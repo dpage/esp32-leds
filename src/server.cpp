@@ -2,7 +2,6 @@
 
 #include <Arduino.h>
 #include <WebServer.h>
-#include <uri/UriBraces.h>
 #include <ESPmDNS.h>
 #include <Preferences.h>
 
@@ -14,6 +13,7 @@
 
 WebServer server(80);
 Preferences preferences;
+
 
 // Format a message for debug/display
 String getRequestMsg(int status)
@@ -41,21 +41,35 @@ void handleRoot()
 {
     Serial.print(String("Server: ") + getRequestMsg(200));
 
-    String webApp = "<html>";
+    // Handle arguments
+    if (server.hasArg("Effect") && atoi(server.arg("Effect").c_str()) != GetEffectId())
+        SetEffectId(atoi(server.arg("Effect").c_str()));
+
+    // Render page
+    String webApp = "<html color-mode=\"user\">";
     webApp += "<head><title>ESP32 LEDs</title>";
-    webApp += "</head><body>";
+    webApp += "<link rel=\"stylesheet\" href=\"https://unpkg.com/mvp.css\">";
+    webApp += "</head><body style=\"margin: 25px;\"><center>";
     webApp += "<h1>Current effect: " + String(GetEffectName()) + "</h1>";
 
+    webApp += "<form method=\"POST\">";
+    webApp += "<label for=\"Effect\">Select an effect:</label>";
+    webApp += "<select name=\"Effect\" id=\"Effect\">";
     for (int i = 0; i < GetNumEffects(); i++)
     {
         if (i == GetEffectId())
-            webApp += "<b><a href=\"/e/" + String(i) + "\">" + String(GetEffectNameById(i)) + "</b><br/>";
+            webApp += "<option selected value=\"" + String(i) + "\">" + String(GetEffectNameById(i)) + "</option>";
         else
-            webApp += "<a href=\"/e/" + String(i) + "\">" + String(GetEffectNameById(i)) + "<br/>";
+            webApp += "<option value=\"" + String(i) + "\">" + String(GetEffectNameById(i)) + "</option>";
     }
+    webApp += "</select>";
+    webApp += "<input type = \"submit\" value = \"Submit\">";
+    webApp += "</form>";
 
-    webApp += "</body></html>";
+    webApp += "<p><a href=\"/setup\">Setup</a></p>";
+    webApp += "</center></body></html>";
 
+    // Finish up
     server.send(200, "text/html", webApp);
 }
 
@@ -68,48 +82,55 @@ void handleSetup()
 
     // Handle arguments
     preferences.begin("ESP32-LEDs", false);
-    for (uint8_t i = 0; i < server.args(); i++)
+    if (server.hasArg("Leds") && atoi(server.arg("Leds").c_str()) != g_NumLeds)
     {
-        if (server.hasArg("Leds") && atoi(server.arg("Leds").c_str()) != g_NumLeds)
-        {
-            Serial.printf("Server: Setting LED count to: %d\n", atoi(server.arg("Leds").c_str()));
-            preferences.putInt("Leds", atoi(server.arg("Leds").c_str()));
-            g_NumLeds = atoi(server.arg("Leds").c_str());
-            reboot = true;
-        }
-        if (server.hasArg("Hostname") && server.arg("Hostname") != GetHostname())
-        {
-            Serial.printf("Server: Setting hostname to: %d\n", server.arg("Hostname").c_str());
-            preferences.putString("Hostname", server.arg("Hostname"));
-            reboot = true;
-        }
+        Serial.printf("Server: Setting LED count to: %d\n", atoi(server.arg("Leds").c_str()));
+        preferences.putInt("Leds", atoi(server.arg("Leds").c_str()));
+        g_NumLeds = atoi(server.arg("Leds").c_str());
+        reboot = true;
+    }
+    if (server.hasArg("Hostname") && server.arg("Hostname") != GetHostname())
+    {
+        Serial.printf("Server: Setting hostname to: %d\n", server.arg("Hostname").c_str());
+        preferences.putString("Hostname", server.arg("Hostname"));
+        reboot = true;
     }
 
-    String webApp = "<html>";
+    // Render page
+    String webApp = "<html color-mode=\"user\">";
     webApp += "<head><title>ESP32 LEDs - Setup</title>";
+    webApp += "<link rel=\"stylesheet\" href=\"https://unpkg.com/mvp.css\">";
 
     if (reboot)
         webApp += "<meta http-equiv=\"refresh\" content=\"10\">";
 
-    webApp += "</head><body>";
+    webApp += "</head><body style=\"margin: 25px;\"><center>";
     webApp += "<h1>ESP32 LEDs - Setup</h1>";
 
-    webApp += "<form method=\"POST\">";
-    webApp += "<label for=\"Leds\">Number of LEDs:</label><br>";
-    webApp += "<input type=\"text\" id=\"Leds\" name=\"Leds\" value=\"" + String(g_NumLeds) + "\"><br>";
-    webApp += "<label for=\"Hostname\">Hostname:</label><br>";
-    webApp += "<input type=\"text\" id=\"Hostname\" name=\"Hostname\" value=\"" + GetHostname() + "\"><br>";
-    webApp += "<input type = \"submit\" value = \"Submit\">";
-    webApp += "</form>";
+    if (!reboot) 
+    {
+        webApp += "<form method=\"POST\">";
+        webApp += "<label for=\"Leds\">Number of LEDs:</label>";
+        webApp += "<input type=\"text\" id=\"Leds\" name=\"Leds\" value=\"" + String(g_NumLeds) + "\">";
+        webApp += "<label for=\"Hostname\">Hostname:</label>";
+        webApp += "<input type=\"text\" id=\"Hostname\" name=\"Hostname\" value=\"" + GetHostname() + "\">";
+        webApp += "<input type = \"submit\" value = \"Submit\">";
+        webApp += "</form>";
+    }
 
     if (reboot)
+    {
         webApp += "<h2>Rebooting...</h2>";
+        webApp += "<p>This page will reload in 10 seconds.</p>";
+    }
+    else
+        webApp += "<p><a href=\"/\">Home</a></p>";
+    webApp += "</center></body></html>";
 
-    webApp += "</body></html>";
-
+    // Finish up
     preferences.end();
-
     server.send(200, "text/html", webApp);
+
     if (reboot)
     {
         delay(3);
@@ -118,39 +139,6 @@ void handleSetup()
     }
 }
 
-
-// Change the effect
-void handleEffect()
-{
-    int effectId = server.pathArg(0).toInt();
-
-    if (effectId >= GetNumEffects())
-    {
-        handleNotFound();
-        return;
-    }
-
-    SetEffectId(effectId);
-
-    String webApp = "<html>";
-    webApp += "<head><title>ESP32 LEDs</title>";
-    webApp += "</head><body>";
-    webApp += "<h1>Effect set to: " + String(GetEffectName()) + "</h1>";
-
-    for (int i = 0; i < GetNumEffects(); i++)
-    {
-        if (i == GetEffectId())
-            webApp += "<b><a href=\"/e/" + String(i) + "\">" + String(GetEffectNameById(i)) + "</b><br/>";
-        else
-            webApp += "<a href=\"/e/" + String(i) + "\">" + String(GetEffectNameById(i)) + "<br/>";
-    }
-
-    webApp += "</body></html>";
-
-    Serial.print(String("Server: ") + getRequestMsg(200));
-    Serial.printf("Server: Effect link clicked. Now running: %s\n", GetEffectName());
-    server.send(200, "text/html", webApp);
-}
 
 // The server loop
 void ServerLoop(void *pvParameters)
@@ -167,7 +155,6 @@ void ServerLoop(void *pvParameters)
         server.enableCORS();
         server.on("/", handleRoot);
         server.on("/setup", handleSetup);
-        server.on(UriBraces("/e/{}"), handleEffect);
         server.onNotFound(handleNotFound);
         server.begin();
 
