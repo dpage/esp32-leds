@@ -25,7 +25,8 @@ const char *effects[] = {
     "Solid Green",
     "Solid Blue",
     "Solid Purple",
-    "Solid Orange"
+    "Solid Orange",
+    "All Off"
 };
 int effectId = 0;
 
@@ -195,6 +196,9 @@ void LedLoop(void *pvParameters)
             break;
         case 17:
             fxOrange.Draw();
+            break;
+        case 18:
+            FastLED.clear();
             break;
         }
 
