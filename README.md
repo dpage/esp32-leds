@@ -16,9 +16,11 @@ J2, Pin 14: LED control signal (GPIO 05)
 
 J3, pin 6:  External power detect (GPIO 47)
 
-The external power detect pin should be fed 5V via a suitable diode, such as a
-1N4007. This will bring the pin high when external power is present, allowing
-the LEDs to run at full brightness, or a safe brightness when using USB power.
+Supply external power at 5V via a suitably beefy diode, such as an SR5100, but
+connect the external power detect pin to the external power before the diode,
+with a pulldown resistor to ground (say, 100K). This will bring the pin high 
+when external power is present, but not when running on USB power, allowing
+the LEDs to run at full brightness, or a safe brightness when using USB only.
 
 ## Hardware
 
