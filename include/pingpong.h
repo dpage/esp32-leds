@@ -49,6 +49,6 @@ public:
 
         _colour.hue = hue;
 
-        delay(20);
+        delay(10);
     }
 };
