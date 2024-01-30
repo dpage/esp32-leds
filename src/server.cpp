@@ -32,15 +32,12 @@ void handleNotFound()
 {
     String message = getRequestMsg(404);
 
-    Serial.print(String("Server: ") + message);
     server.send(404, "text/plain", message);
 }
 
 // Home page
 void handleRoot()
 {
-    Serial.print(String("Server: ") + getRequestMsg(200));
-
     // Handle arguments
     if (server.hasArg("Effect") && atoi(server.arg("Effect").c_str()) != GetEffectId())
         SetEffectId(atoi(server.arg("Effect").c_str()));
@@ -78,25 +75,20 @@ void handleSetup()
 {
     boolean reboot = false;
 
-    Serial.print(String("Server: ") + getRequestMsg(200));
-
     // Handle arguments
     preferences.begin("ESP32-LEDs", false);
     if (server.hasArg("Leds") && atoi(server.arg("Leds").c_str()) != GetNumLeds())
     {
-        Serial.printf("Server: Setting LED count to: %d\n", atoi(server.arg("Leds").c_str()));
         SetNumLeds(atoi(server.arg("Leds").c_str()));
         reboot = true;
     }
     if (server.hasArg("Hostname") && server.arg("Hostname") != GetHostname())
     {
-        Serial.printf("Server: Setting hostname to: %d\n", server.arg("Hostname").c_str());
         preferences.putString("Hostname", server.arg("Hostname"));
         reboot = true;
     }
     if (server.hasArg("PwrMgmt") && atoi(server.arg("PwrMgmt").c_str()) != GetPowerManagement())
     {
-        Serial.printf("Server: Setting Power Management to: %d\n", atoi(server.arg("PwrMgmt").c_str()) ? "On" : "Off");
         SetPowerManagement(atoi(server.arg("PwrMgmt").c_str()) ? true : false);
     }
 
@@ -151,7 +143,6 @@ void handleSetup()
     if (reboot)
     {
         delay(3);
-        Serial.println("Server: Rebooting to apply configuration changes...");
         ESP.restart();
     }
 }
@@ -160,7 +151,6 @@ void handleSetup()
 // The server loop
 void ServerLoop(void *pvParameters)
 {
-    Serial.printf("Server: Starting mDNS with hostname: %s.local...\n", GetHostname());
     if (MDNS.begin(GetHostname().c_str()))
     {
         MDNS.addService("http", "tcp", 80);
@@ -168,7 +158,6 @@ void ServerLoop(void *pvParameters)
 
     for (;;)
     {
-        Serial.printf("Server: Starting webserver...\n");
         server.enableCORS();
         server.on("/", handleRoot);
         server.on("/setup", handleSetup);

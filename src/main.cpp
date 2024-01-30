@@ -91,14 +91,12 @@ void checkPowerState()
 
         if (externalPower == LOW)
         {
-            Serial.printf("ESP32 : Power mode: USB.\n");
             bExternalPower = false;
             set_max_power_indicator_LED(LED_BUILTIN);
             FastLED.setMaxPowerInMilliWatts(900);
         }
         else
         {
-            Serial.printf("ESP32 : Power mode: External.\n");
             digitalWrite(LED_BUILTIN, LOW);
             bExternalPower = true;
             set_max_power_indicator_LED(0);
@@ -107,7 +105,6 @@ void checkPowerState()
     }
     else
     {
-        Serial.printf("ESP32 : Power mode: Unmanaged.\n");
         digitalWrite(LED_BUILTIN, LOW);
         bExternalPower = true;
         set_max_power_indicator_LED(0);
@@ -131,10 +128,7 @@ void checkButtons()
         if (btnModeState != lastBtnModeState)
         {
             if (btnModeState == LOW)
-            {
                 NextEffect(); 
-                Serial.printf("ESP32 : Next effect button pushed. Now running: %s\n", GetEffectName());
-            }
 
             // Save the current state as the last state, for next time through the loop
             lastBtnModeState = btnModeState;
@@ -158,9 +152,6 @@ void setup()
     // Serial
     Serial.begin(115200);
     while (!Serial) { }
-    Serial.printf("ESP32 : Startup, firmware version %s.\n", FIRMWARE_VERSION);
-    Serial.printf("ESP32 : Configured for %d LEDs on pin %d.\n", nLeds, LED_PIN);
-    Serial.printf("ESP32 : Power management set to: %s\n", bPowerManagement ? "On" : "Off");
 
     // Setup the GPIO pins
     pinMode(LED_BUILTIN, OUTPUT);
@@ -240,13 +231,18 @@ void loop()
     {
         char msg1[64], msg2[64], msg3[64], msg4[64], msg5[64], msg6[64];
 
-        snprintf(msg1, 64, "Stats: %ufps, %umW",
-                            FastLED.getFPS(), 
-                            calculate_unscaled_power_mW(fbLEDs, 4));
+        snprintf(msg1, 64, "Stats: %u LEDs, %ufps",
+                 nLeds,
+                 FastLED.getFPS());
+                 
         if (bPowerManagement)
-            snprintf(msg2, 64, "PWR  : %s", bExternalPower ? "External" : "USB");
+            snprintf(msg2, 64, "PWR  : %s, %umW",
+                     bExternalPower ? "External" : "USB",
+                     calculate_unscaled_power_mW(fbLEDs, 4));
         else
-            snprintf(msg2, 64, "PWR  : Unmanaged");
+            snprintf(msg2, 64, "PWR  : Unmanaged, %umW",
+                     calculate_unscaled_power_mW(fbLEDs, 4));
+
         snprintf(msg3, 64, "SSID : %s", GetSSID());
         snprintf(msg4, 64, "IP   : %s", GetLocalIP());
         snprintf(msg5, 64, "mDNS : %s.local", GetHostname());

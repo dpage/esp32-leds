@@ -77,17 +77,11 @@ boolean wpsStart()
 {
     int res = esp_wifi_wps_enable(&config);
     if (res)
-    {
-        Serial.printf("ESP32 : WPS enable failed: %d\n", res);
         return false;
-    }
 
     res = esp_wifi_wps_start(0);
     if (res)
-    {
-        Serial.printf("ESP32 : WPS start failed: %d\n", res);
         return false;
-    }
 
     return true;
 }
@@ -96,18 +90,12 @@ boolean wpsStart()
 // Stop the WPS process
 void wpsStop()
 {
-    int res = esp_wifi_wps_disable();
-    if (res)
-    {
-        Serial.printf("ESP32 : WPS disable failed: %d\n", res);
-    }
+    esp_wifi_wps_disable();
 }
 
 // Kick off the WPS WiFi configuration
 void wpsSetup()
 {
-    Serial.printf("ESP32 : Entering WPS Setup mode...\n");
-
     wpsInitConfig();
     wpsStart();
 }
@@ -119,29 +107,18 @@ void WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     switch (event)
     {
     case ARDUINO_EVENT_WIFI_STA_START:
-        Serial.println("ESP32 : Station Mode Started");
-        break;
     case ARDUINO_EVENT_WIFI_STA_GOT_IP:
-        Serial.printf("ESP32 : SSID: %s, hostname: %s, IP: %s\n",
-                      WiFi.SSID(), GetHostname(), WiFi.localIP().toString());
         break;
     case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-        Serial.println("ESP32 : Disconnected from station, attempting reconnection");
         WiFi.reconnect();
         break;
     case ARDUINO_EVENT_WPS_ER_SUCCESS:
-        Serial.println("ESP32 : WPS Successful, stopping WPS and connecting to: " + String(WiFi.SSID()));
         wpsStop();
         delay(10);
         WiFi.begin();
         break;
     case ARDUINO_EVENT_WPS_ER_FAILED:
-        Serial.println("ESP32 : WPS Failed, retrying");
-        wpsStop();
-        wpsStart();
-        break;
     case ARDUINO_EVENT_WPS_ER_TIMEOUT:
-        Serial.println("ESP32 : WPS Timeout, retrying");
         wpsStop();
         wpsStart();
         break;
@@ -156,8 +133,6 @@ void initWiFi()
 {
     int countdown = 10;
     boolean wps = false;
-
-    Serial.println("ESP32 : Initialising WiFi...");
 
     WiFi.onEvent(WiFiEvent);
     WiFi.mode(WIFI_STA);

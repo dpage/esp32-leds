@@ -60,8 +60,6 @@ void saveEffect()
 {
     Preferences preferences;
 
-    Serial.printf("Server: Saving last effect: %s\n", GetEffectName());
-
     preferences.begin("ESP32-LEDs", false);
     preferences.putInt("effectId", effectId);
     preferences.end();
@@ -100,8 +98,6 @@ void initLEDs()
 
     // Clear everything
     FastLED.show();
-
-    Serial.printf("Server: Loaded last effect: %s\n", GetEffectName());
 }
 
 
