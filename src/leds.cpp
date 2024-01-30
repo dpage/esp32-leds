@@ -89,7 +89,7 @@ void initLEDs()
     // Setup the LED strip and power management (warning LED and throttling)
     // Note: Power management should be removed if using an external PSU for
     //       the LED strips. This is just to prevent blowing out USB power.
-    FastLED.addLeds<WS2812B, LED_PIN, GRB>(g_LEDs, g_NumLeds);
+    FastLED.addLeds<WS2812B, LED_PIN, GRB>(g_LEDs, GetNumLeds());
     FastLED.setBrightness(255);
 
     // Load the last effect
@@ -109,27 +109,27 @@ void initLEDs()
 void LedLoop(void *pvParameters)
 {
     // Instantiate our effects
-    BouncingBallEffect fxBalls(g_NumLeds, 3, 0, false, 8.0);
-    BouncingBallEffect fxBallsFade(g_NumLeds, 3, 64, false, 8.0);
-    BouncingBallEffect fxBallsMirror(g_NumLeds, 3, 0, true, 8.0);
-    BouncingBallEffect fxBallsMirrorFade(g_NumLeds, 3, 64, true, 8.0);
+    BouncingBallEffect fxBalls(GetNumLeds(), 3, 0, false, 8.0);
+    BouncingBallEffect fxBallsFade(GetNumLeds(), 3, 64, false, 8.0);
+    BouncingBallEffect fxBallsMirror(GetNumLeds(), 3, 0, true, 8.0);
+    BouncingBallEffect fxBallsMirrorFade(GetNumLeds(), 3, 64, true, 8.0);
 
-    CometEffect fxComet(g_NumLeds);
+    CometEffect fxComet(GetNumLeds());
 
-    MarqueeEffect fxMarquee(g_NumLeds, false);
-    MarqueeEffect fxMarqueeMirror(g_NumLeds, true);
+    MarqueeEffect fxMarquee(GetNumLeds(), false);
+    MarqueeEffect fxMarqueeMirror(GetNumLeds(), true);
 
-    FireEffect fxFireOut(g_NumLeds, 30, 100, 3, 2, false, true);
-    FireEffect fxFireIn(g_NumLeds, 30, 100, 3, 2, true, true);
+    FireEffect fxFireOut(GetNumLeds(), 30, 100, 3, 2, false, true);
+    FireEffect fxFireIn(GetNumLeds(), 30, 100, 3, 2, true, true);
 
-    FireEffect fxFireXOut(g_NumLeds, 50, 300, 30, 12, false, true);
-    FireEffect fxFireXIn(g_NumLeds, 50, 300, 30, 12, true, true);
+    FireEffect fxFireXOut(GetNumLeds(), 50, 300, 30, 12, false, true);
+    FireEffect fxFireXIn(GetNumLeds(), 50, 300, 30, 12, true, true);
 
-    TwinkleEffect fxTwinkle(g_NumLeds);
+    TwinkleEffect fxTwinkle(GetNumLeds());
 
-    SolidEffect fxSolid(g_NumLeds);
+    SolidEffect fxSolid(GetNumLeds());
 
-    PingPongEffect fxPingPong(g_NumLeds);
+    PingPongEffect fxPingPong(GetNumLeds());
 
     for (;;)
     {

@@ -28,7 +28,7 @@ TaskHandle_t tLeds;
 TaskHandle_t tServer;
 
 // Frame buffer for FastLED
-int g_NumLeds = DEFAULT_NUM_LEDS;
+int nLeds = DEFAULT_NUM_LEDS;
 CRGB g_LEDs[DEFAULT_NUM_LEDS] = {0};
 
 // Power management
@@ -40,6 +40,24 @@ boolean btnModeState = 0;
 boolean lastBtnModeState = 0;
 
 
+// How many LEDs?
+int GetNumLeds()
+{
+    return nLeds;
+}
+
+
+void SetNumLeds(int leds)
+{
+    Preferences preferences;
+    preferences.begin("ESP32-LEDs", false);
+    preferences.putInt("Leds", leds);
+    preferences.end();
+
+    nLeds = leds;
+}
+
+
 // Are we in power management mode?
 boolean GetPowerManagement()
 {
@@ -47,7 +65,6 @@ boolean GetPowerManagement()
 }
 
 
-// Are we in power management mode?
 void SetPowerManagement(boolean enabled)
 {
     Preferences preferences;
@@ -132,7 +149,7 @@ void setup()
     // Number of LEDs
     Preferences preferences;
     preferences.begin("ESP32-LEDs", true);
-    g_NumLeds = preferences.getInt("Leds", DEFAULT_NUM_LEDS);
+    nLeds = preferences.getInt("Leds", DEFAULT_NUM_LEDS);
     g_PowerManagement = preferences.getBool("PwrMgmt", g_PowerManagement);
     preferences.end();
 
@@ -140,7 +157,7 @@ void setup()
     Serial.begin(115200);
     while (!Serial) { }
     Serial.printf("ESP32 : Startup, firmware version %s.\n", FIRMWARE_VERSION);
-    Serial.printf("ESP32 : Configured for %d LEDs on pin %d.\n", g_NumLeds, LED_PIN);
+    Serial.printf("ESP32 : Configured for %d LEDs on pin %d.\n", nLeds, LED_PIN);
 
     // Setup the GPIO pins
     pinMode(LED_BUILTIN, OUTPUT);

@@ -82,11 +82,10 @@ void handleSetup()
 
     // Handle arguments
     preferences.begin("ESP32-LEDs", false);
-    if (server.hasArg("Leds") && atoi(server.arg("Leds").c_str()) != g_NumLeds)
+    if (server.hasArg("Leds") && atoi(server.arg("Leds").c_str()) != GetNumLeds())
     {
         Serial.printf("Server: Setting LED count to: %d\n", atoi(server.arg("Leds").c_str()));
-        preferences.putInt("Leds", atoi(server.arg("Leds").c_str()));
-        g_NumLeds = atoi(server.arg("Leds").c_str());
+        SetNumLeds(atoi(server.arg("Leds").c_str()));
         reboot = true;
     }
     if (server.hasArg("Hostname") && server.arg("Hostname") != GetHostname())
@@ -116,7 +115,7 @@ void handleSetup()
     {
         webApp += "<form method=\"POST\">";
         webApp += "<label for=\"Leds\">Number of LEDs:</label>";
-        webApp += "<input type=\"text\" id=\"Leds\" name=\"Leds\" value=\"" + String(g_NumLeds) + "\">";
+        webApp += "<input type=\"text\" id=\"Leds\" name=\"Leds\" value=\"" + String(GetNumLeds()) + "\">";
         webApp += "<label for=\"Hostname\">Hostname:</label>";
         webApp += "<input type=\"text\" id=\"Hostname\" name=\"Hostname\" value=\"" + GetHostname() + "\">";
         webApp += "<label for=\"PwrMgmt\">Power Management:</label>";
