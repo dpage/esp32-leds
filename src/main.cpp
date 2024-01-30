@@ -29,16 +29,18 @@ TaskHandle_t tServer;
 
 // Frame buffer for FastLED
 int nLeds = DEFAULT_NUM_LEDS;
-CRGB g_LEDs[DEFAULT_NUM_LEDS] = {0};
+CRGB fbLEDs[DEFAULT_NUM_LEDS] = {0};
 
 // Power management
-boolean g_ExternalPower = false;
-boolean g_PowerManagement = true;
+boolean bExternalPower = false;
+boolean bPowerManagement = true;
 
 // Button state tracking
 boolean btnModeState = 0;
 boolean lastBtnModeState = 0;
 
+
+// Access to the fframe buffer
 
 // How many LEDs?
 int GetNumLeds()
@@ -61,7 +63,7 @@ void SetNumLeds(int leds)
 // Are we in power management mode?
 boolean GetPowerManagement()
 {
-    return g_PowerManagement;
+    return bPowerManagement;
 }
 
 
@@ -72,7 +74,7 @@ void SetPowerManagement(boolean enabled)
     preferences.putBool("PwrMgmt", enabled);
     preferences.end();
 
-    g_PowerManagement = enabled;
+    bPowerManagement = enabled;
 }
 
 
@@ -80,17 +82,17 @@ void SetPowerManagement(boolean enabled)
 // measures as appropriate
 void checkPowerState()
 {
-    if (g_PowerManagement)
+    if (bPowerManagement)
     {
         boolean externalPower = digitalRead(EPWR_PIN);
 
-        if (externalPower == g_ExternalPower)
+        if (externalPower == bExternalPower)
             return;
 
         if (externalPower == LOW)
         {
             Serial.printf("ESP32 : Power mode: USB.\n");
-            g_ExternalPower = false;
+            bExternalPower = false;
             set_max_power_indicator_LED(LED_BUILTIN);
             FastLED.setMaxPowerInMilliWatts(900);
         }
@@ -98,7 +100,7 @@ void checkPowerState()
         {
             Serial.printf("ESP32 : Power mode: External.\n");
             digitalWrite(LED_BUILTIN, LOW);
-            g_ExternalPower = true;
+            bExternalPower = true;
             set_max_power_indicator_LED(0);
             FastLED.setMaxPowerInMilliWatts(25000);
         }
@@ -107,7 +109,7 @@ void checkPowerState()
     {
         Serial.printf("ESP32 : Power mode: Unmanaged.\n");
         digitalWrite(LED_BUILTIN, LOW);
-        g_ExternalPower = true;
+        bExternalPower = true;
         set_max_power_indicator_LED(0);
         FastLED.setMaxPowerInMilliWatts(10000);
     }
@@ -150,7 +152,7 @@ void setup()
     Preferences preferences;
     preferences.begin("ESP32-LEDs", true);
     nLeds = preferences.getInt("Leds", DEFAULT_NUM_LEDS);
-    g_PowerManagement = preferences.getBool("PwrMgmt", g_PowerManagement);
+    bPowerManagement = preferences.getBool("PwrMgmt", bPowerManagement);
     preferences.end();
 
     // Serial
@@ -239,9 +241,9 @@ void loop()
 
         snprintf(msg1, 64, "Stats: %ufps, %umW",
                             FastLED.getFPS(), 
-                            calculate_unscaled_power_mW(g_LEDs, 4));
-        if (g_PowerManagement)
-            snprintf(msg2, 64, "PWR  : %s", g_ExternalPower ? "External" : "USB");
+                            calculate_unscaled_power_mW(fbLEDs, 4));
+        if (bPowerManagement)
+            snprintf(msg2, 64, "PWR  : %s", bExternalPower ? "External" : "USB");
         else
             snprintf(msg2, 64, "PWR  : Unmanaged");
         snprintf(msg3, 64, "SSID : %s", GetSSID());

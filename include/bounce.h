@@ -20,7 +20,7 @@ using namespace std;
 #include "main.h"
 #include "ledgfx.h"
 
-extern CRGB g_LEDs[];
+extern CRGB fbLEDs[];
 
 // Draws a set of N bouncing balls using a simple little kinematics formula.  
 static const CRGB ballColors[] =
@@ -91,7 +91,7 @@ public:
         {
             for (size_t i = 0; i < _cLength; i++)
             {
-                g_LEDs[i].fadeToBlackBy(_byteFade);
+                fbLEDs[i].fadeToBlackBy(_byteFade);
             }
         }
         else

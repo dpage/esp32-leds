@@ -15,7 +15,7 @@
 
 #include "main.h"
 
-extern CRGB g_LEDs[];
+extern CRGB fbLEDs[];
 
 class MarqueeEffect
 {
@@ -44,15 +44,15 @@ public:
             {
                 for (int i = 0; i < (_nLeds + 1) / 2; i++)
                 {
-                    g_LEDs[i] = c.setHue(k);
-                    g_LEDs[_nLeds - 1 - i] = c.setHue(k);
+                    fbLEDs[i] = c.setHue(k);
+                    fbLEDs[_nLeds - 1 - i] = c.setHue(k);
                     k += 8;
                 }
             }
             else
             {
                 for (int i = 0; i < _nLeds; i++)
-                    g_LEDs[i] = c.setHue(k += 8);
+                    fbLEDs[i] = c.setHue(k += 8);
             }
 
             static int scroll = 0;
@@ -62,15 +62,15 @@ public:
             {
                 for (int i = scroll % 5; i < _nLeds / 2; i += 5)
                 {
-                    g_LEDs[i] = CRGB::Black;
-                    g_LEDs[_nLeds - 1 - i] = CRGB::Black;
+                    fbLEDs[i] = CRGB::Black;
+                    fbLEDs[_nLeds - 1 - i] = CRGB::Black;
                 }
             }
             else
             {
                 for (int i = scroll % 5; i < _nLeds - 1; i += 5)
                 {
-                    g_LEDs[i] = CRGB::Black;
+                    fbLEDs[i] = CRGB::Black;
                 }
             }
 

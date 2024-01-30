@@ -14,7 +14,7 @@
 
 #include "main.h"
 
-extern CRGB g_LEDs[];
+extern CRGB fbLEDs[];
 
 class CometEffect
 {
@@ -44,11 +44,11 @@ public:
             iDirection *= -1;
 
         for (int i = 0; i < cometSize; i++)
-            g_LEDs[iPos + i].setHue(hue);
+            fbLEDs[iPos + i].setHue(hue);
 
         // Randomly fade the LEDs
         for (int j = 0; j < _nLeds; j++)
             if (random(10) > 5)
-                g_LEDs[j] = g_LEDs[j].fadeToBlackBy(fadeAmt);
+                fbLEDs[j] = fbLEDs[j].fadeToBlackBy(fadeAmt);
     }
 };
