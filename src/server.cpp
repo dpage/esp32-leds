@@ -91,6 +91,10 @@ void handleSetup()
     {
         SetPowerManagement(atoi(server.arg("PwrMgmt").c_str()) ? true : false);
     }
+    if (server.hasArg("Brightness") && atoi(server.arg("Brightness").c_str()) != GetBrightness())
+    {
+        setBrightness(atoi(server.arg("Brightness").c_str()));
+    }
 
     // Render page
     String webApp = "<html color-mode=\"user\">";
@@ -123,6 +127,8 @@ void handleSetup()
             webApp += "<option selected value=\"0\">Disabled</option>";
         }
         webApp += "</select>";
+        webApp += "<label for=\"Brightness\">Brightness (0 - 255):</label>";
+        webApp += "<input type=\"text\" id=\"Brightness\" name=\"Brightness\" value=\"" + String(GetBrightness()) + "\">";
         webApp += "<input type = \"submit\" value = \"Submit\">";
         webApp += "</form>";
     }

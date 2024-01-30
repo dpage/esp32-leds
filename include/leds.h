@@ -11,5 +11,7 @@ const char *GetEffectName();
 const char *GetEffectNameById(int id);
 void SetEffectId(int id);
 void NextEffect();
+int GetBrightness();
+void setBrightness(int brightness);
 
 #endif

@@ -33,6 +33,7 @@ const char *effects[] = {
 };
 
 int effectId = 0;
+int iBrightness = 255;
 
 #include "balls.h"
 #include "comet.h"
@@ -93,6 +94,28 @@ void NextEffect()
     saveEffect();
 }
 
+// Brightness
+int GetBrightness()
+{
+    return iBrightness;
+}
+
+void setBrightness(int brightness)
+{
+    Preferences preferences;
+
+    if (brightness < 0)
+        brightness = 0;
+
+    if (brightness > 255)
+        brightness = 255;
+
+    preferences.begin("ESP32-LEDs", false);
+    preferences.putInt("Brightness", brightness);
+    preferences.end();
+
+    iBrightness = brightness;
+}
 
 // Initialise the LEDs
 void initLEDs()
@@ -224,6 +247,6 @@ void LedLoop(void *pvParameters)
         }
 
         // Display the frame
-        FastLED.show();
+        FastLED.show(iBrightness);
     }
 }
