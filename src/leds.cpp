@@ -97,9 +97,6 @@ void NextEffect()
 // Initialise the LEDs
 void initLEDs()
 {
-    // Setup the LED strip and power management (warning LED and throttling)
-    // Note: Power management should be removed if using an external PSU for
-    //       the LED strips. This is just to prevent blowing out USB power.
     FastLED.addLeds<WS2812B, LED_PIN, GRB>(fbLEDs, GetNumLeds());
     FastLED.setBrightness(255);
 
