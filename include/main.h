@@ -4,7 +4,7 @@
 // Main
 
 // Firmward version
-#define FIRMWARE_VERSION "0.4"
+#define FIRMWARE_VERSION "0.5"
 
 // LED strip config
 #define DEFAULT_NUM_LEDS 300
@@ -14,5 +14,9 @@ extern int g_NumLeds;
 
 // Button config
 #define BTN_MODE_PIN 0
+
+// Functions
+boolean GetPowerManagement();
+void SetPowerManagement(boolean enabled);
 
 #endif

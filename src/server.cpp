@@ -95,6 +95,11 @@ void handleSetup()
         preferences.putString("Hostname", server.arg("Hostname"));
         reboot = true;
     }
+    if (server.hasArg("PwrMgmt") && atoi(server.arg("PwrMgmt").c_str()) != GetPowerManagement())
+    {
+        Serial.printf("Server: Setting Power Management to: %d\n", atoi(server.arg("PwrMgmt").c_str()) ? "On" : "Off");
+        SetPowerManagement(atoi(server.arg("PwrMgmt").c_str()) ? true : false);
+    }
 
     // Render page
     String webApp = "<html color-mode=\"user\">";
@@ -114,6 +119,19 @@ void handleSetup()
         webApp += "<input type=\"text\" id=\"Leds\" name=\"Leds\" value=\"" + String(g_NumLeds) + "\">";
         webApp += "<label for=\"Hostname\">Hostname:</label>";
         webApp += "<input type=\"text\" id=\"Hostname\" name=\"Hostname\" value=\"" + GetHostname() + "\">";
+        webApp += "<label for=\"PwrMgmt\">Power Management:</label>";
+        webApp += "<select name=\"PwrMgmt\" id=\"PwrMgmt\">";
+        if (GetPowerManagement() == true)
+        {
+            webApp += "<option selected value=\"1\">Enabled</option>";
+            webApp += "<option value=\"0\">Disabled</option>";
+        }
+        else
+        {
+            webApp += "<option value=\"1\">Enabled</option>";
+            webApp += "<option selected value=\"0\">Disabled</option>";
+        }
+        webApp += "</select>";
         webApp += "<input type = \"submit\" value = \"Submit\">";
         webApp += "</form>";
     }
