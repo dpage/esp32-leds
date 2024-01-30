@@ -8,6 +8,7 @@
 
 // Effect info
 const char *effects[] = {
+    "All Off",
     "Balls",
     "Balls Fade",
     "Balls Mirror",
@@ -20,9 +21,17 @@ const char *effects[] = {
     "FireX Out",
     "FireX In",
     "Twinkle",
-    "Rainbow Solid",
-    "Rainbow Ping Pong",
-    "All Off"};
+    "Solid",
+    "Ping Pong",
+    "Rainbow Short",
+    "Rainbow Full",
+    "Rainbow Short Glitter",
+    "Rainbow Full Glitter",
+    "Confetti",
+    "Juggle",
+    "Beats"
+};
+
 int effectId = 0;
 
 #include "bounce.h"
@@ -32,6 +41,10 @@ int effectId = 0;
 #include "fire.h"
 #include "solid.h"
 #include "pingpong.h"
+#include "rainbow.h"
+#include "confetti.h"
+#include "juggle.h"
+#include "beats.h"
 
 int GetNumEffects()
 {
@@ -127,55 +140,87 @@ void LedLoop(void *pvParameters)
 
     PingPongEffect fxPingPong(GetNumLeds());
 
+    RainbowEffect fxRainbowFull(GetNumLeds(), true, false);
+    RainbowEffect fxRainbowShort(GetNumLeds(), false, false);
+    RainbowEffect fxRainbowFullGlitter(GetNumLeds(), true, true);
+    RainbowEffect fxRainbowShortGlitter(GetNumLeds(), false, true);
+
+    ConfettiEffect fxConfetti(GetNumLeds());
+
+    JuggleEffect fxJuggle(GetNumLeds());
+
+    BeatsEffect fxBeats(GetNumLeds());
+
     for (;;)
     {
         // Draw the appropriate pattern
         switch (effectId)
         {
         case 0:
-            fxBalls.Draw();
+            FastLED.clear();
             break;
         case 1:
-            fxBallsFade.Draw();
+            fxBalls.Draw();
             break;
         case 2:
-            fxBallsMirror.Draw();
+            fxBallsFade.Draw();
             break;
         case 3:
-            fxBallsMirrorFade.Draw();
+            fxBallsMirror.Draw();
             break;
         case 4:
-            fxComet.Draw();
+            fxBallsMirrorFade.Draw();
             break;
         case 5:
-            fxMarquee.Draw();
+            fxComet.Draw();
             break;
         case 6:
-            fxMarqueeMirror.Draw();
+            fxMarquee.Draw();
             break;
         case 7:
-            fxFireOut.Draw();
+            fxMarqueeMirror.Draw();
             break;
         case 8:
-            fxFireIn.Draw();
+            fxFireOut.Draw();
             break;
         case 9:
-            fxFireXOut.Draw();
+            fxFireIn.Draw();
             break;
         case 10:
-            fxFireXIn.Draw();
+            fxFireXOut.Draw();
             break;
         case 11:
-            fxTwinkle.Draw();
+            fxFireXIn.Draw();
             break;
         case 12:
-            fxSolid.Draw();
+            fxTwinkle.Draw();
             break;
         case 13:
-            fxPingPong.Draw();
+            fxSolid.Draw();
             break;
         case 14:
-            FastLED.clear();
+            fxPingPong.Draw();
+            break;
+        case 15:
+            fxRainbowShort.Draw();
+            break;
+        case 16:
+            fxRainbowFull.Draw();
+            break;
+        case 17:
+            fxRainbowShortGlitter.Draw();
+            break;
+        case 18:
+            fxRainbowFullGlitter.Draw();
+            break;
+        case 19:
+            fxConfetti.Draw();
+            break;
+        case 20:
+            fxJuggle.Draw();
+            break;
+        case 21:
+            fxBeats.Draw();
             break;
         default:
             SetEffectId(0);

@@ -4,7 +4,7 @@
 // Main
 
 // Firmward version
-#define FIRMWARE_VERSION "0.6"
+#define FIRMWARE_VERSION "0.7"
 
 // LED strip config
 #define DEFAULT_NUM_LEDS 300

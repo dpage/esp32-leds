@@ -10,7 +10,6 @@
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C g_OLED(U8G2_R2, OLED_RESET, OLED_CLOCK, OLED_DATA);
 int g_lineHeight10 = 0;
 int g_lineHeight12 = 0;
-int g_lineHeight15 = 0;
 int g_width = 0;
 int g_height = 0;
 
@@ -24,8 +23,6 @@ void initOLED()
     g_lineHeight10 = g_OLED.getFontAscent() - g_OLED.getFontDescent();
     g_OLED.setFont(u8g2_font_profont12_tf);
     g_lineHeight12 = g_OLED.getFontAscent() - g_OLED.getFontDescent();
-    g_OLED.setFont(u8g2_font_profont15_tf);
-    g_lineHeight15 = g_OLED.getFontAscent() - g_OLED.getFontDescent();
     g_width = g_OLED.getWidth();
     g_height = g_OLED.getHeight();
 }
@@ -38,9 +35,9 @@ void oledDisplay(const char *title, const char *line1, const char *line2, const 
 
     g_OLED.clearBuffer();
 
-    g_OLED.setFont(u8g2_font_profont15_tf);
+    g_OLED.setFont(u8g2_font_profont12_tf);
 
-    linePos = g_lineHeight15;
+    linePos = g_lineHeight12;
     g_OLED.setCursor(0, linePos);
     g_OLED.printf(title);
 
