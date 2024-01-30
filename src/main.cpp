@@ -160,6 +160,7 @@ void setup()
     while (!Serial) { }
     Serial.printf("ESP32 : Startup, firmware version %s.\n", FIRMWARE_VERSION);
     Serial.printf("ESP32 : Configured for %d LEDs on pin %d.\n", nLeds, LED_PIN);
+    Serial.printf("ESP32 : Power management set to: %s\n", bPowerManagement ? "On" : "Off");
 
     // Setup the GPIO pins
     pinMode(LED_BUILTIN, OUTPUT);
