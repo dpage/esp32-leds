@@ -30,8 +30,8 @@ private:
     int _nLeds;
 
 public:
-    TwinkleEffect(int leds)
-        : _nLeds(leds)
+    TwinkleEffect()
+        : _nLeds(GetNumLeds())
     {
     }
 

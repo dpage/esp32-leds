@@ -14,8 +14,8 @@ private:
     boolean _bGlitter;
 
 public:
-    RainbowEffect(int leds, boolean circular, boolean glitter)
-        : _nLeds(leds),
+    RainbowEffect(boolean circular, boolean glitter)
+        : _nLeds(GetNumLeds()),
           _bCircular(circular),
           _bGlitter(glitter)
     {

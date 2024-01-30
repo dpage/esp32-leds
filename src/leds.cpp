@@ -34,7 +34,7 @@ const char *effects[] = {
 
 int effectId = 0;
 
-#include "bounce.h"
+#include "balls.h"
 #include "comet.h"
 #include "marquee.h"
 #include "twinkle.h"
@@ -118,38 +118,37 @@ void initLEDs()
 void LedLoop(void *pvParameters)
 {
     // Instantiate our effects
-    BouncingBallEffect fxBalls(GetNumLeds(), 3, 0, false, 8.0);
-    BouncingBallEffect fxBallsFade(GetNumLeds(), 3, 64, false, 8.0);
-    BouncingBallEffect fxBallsMirror(GetNumLeds(), 3, 0, true, 8.0);
-    BouncingBallEffect fxBallsMirrorFade(GetNumLeds(), 3, 64, true, 8.0);
+    BallsEffect fxBalls(3, 0, false, 8.0);
+    BallsEffect fxBallsFade(3, 64, false, 8.0);
+    BallsEffect fxBallsMirror(3, 0, true, 8.0);
+    BallsEffect fxBallsMirrorFade(3, 64, true, 8.0);
 
-    CometEffect fxComet(GetNumLeds());
+    CometEffect fxComet;
 
-    MarqueeEffect fxMarquee(GetNumLeds(), false);
-    MarqueeEffect fxMarqueeMirror(GetNumLeds(), true);
+    MarqueeEffect fxMarquee(false);
+    MarqueeEffect fxMarqueeMirror(true);
 
-    FireEffect fxFireOut(GetNumLeds(), 30, 100, 3, 2, false, true);
-    FireEffect fxFireIn(GetNumLeds(), 30, 100, 3, 2, true, true);
+    FireEffect fxFireOut(30, 100, 3, 2, false, true);
+    FireEffect fxFireIn(30, 100, 3, 2, true, true);
+    FireEffect fxFireXOut(50, 300, 30, 12, false, true);
+    FireEffect fxFireXIn(50, 300, 30, 12, true, true);
 
-    FireEffect fxFireXOut(GetNumLeds(), 50, 300, 30, 12, false, true);
-    FireEffect fxFireXIn(GetNumLeds(), 50, 300, 30, 12, true, true);
+    TwinkleEffect fxTwinkle;
 
-    TwinkleEffect fxTwinkle(GetNumLeds());
+    SolidEffect fxSolid;
 
-    SolidEffect fxSolid(GetNumLeds());
+    PingPongEffect fxPingPong;
 
-    PingPongEffect fxPingPong(GetNumLeds());
+    RainbowEffect fxRainbowFull(true, false);
+    RainbowEffect fxRainbowShort(false, false);
+    RainbowEffect fxRainbowFullGlitter(true, true);
+    RainbowEffect fxRainbowShortGlitter(false, true);
 
-    RainbowEffect fxRainbowFull(GetNumLeds(), true, false);
-    RainbowEffect fxRainbowShort(GetNumLeds(), false, false);
-    RainbowEffect fxRainbowFullGlitter(GetNumLeds(), true, true);
-    RainbowEffect fxRainbowShortGlitter(GetNumLeds(), false, true);
+    ConfettiEffect fxConfetti;
 
-    ConfettiEffect fxConfetti(GetNumLeds());
+    JuggleEffect fxJuggle;
 
-    JuggleEffect fxJuggle(GetNumLeds());
-
-    BeatsEffect fxBeats(GetNumLeds());
+    BeatsEffect fxBeats;
 
     for (;;)
     {

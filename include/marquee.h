@@ -24,8 +24,8 @@ private:
     bool _bMirrored;
 
 public:
-    MarqueeEffect(int leds, boolean bmirrored = false)
-        : _nLeds(leds),
+    MarqueeEffect(boolean bmirrored = false)
+        : _nLeds(GetNumLeds()),
           _bMirrored(bmirrored)
     {
     }

@@ -33,8 +33,7 @@ static const CRGB ballColors[] =
     CRGB::Cyan
 };
 
-
-class BouncingBallEffect
+class BallsEffect
 {
 private:
     double InitialBallSpeed(double height) const
@@ -62,8 +61,8 @@ private:
     }
 
 public:
-    BouncingBallEffect(size_t length, size_t ballCount = 3, byte fade = 0, bool mirrored = false, double speedKnob = 4.0)
-        : _cLength(length - 1), // Reserve one LED for floating point fraction draw
+    BallsEffect(size_t ballCount = 3, byte fade = 0, bool mirrored = false, double speedKnob = 4.0)
+        : _cLength(GetNumLeds() - 1), // Reserve one LED for floating point fraction draw
           _cBalls(ballCount),
           _byteFade(fade),
           _bMirrored(mirrored),

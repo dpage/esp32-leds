@@ -12,8 +12,8 @@ private:
     int _nLeds;
 
 public:
-    JuggleEffect(int leds)
-        : _nLeds(leds)
+    JuggleEffect()
+        : _nLeds(GetNumLeds())
     {
     }
 

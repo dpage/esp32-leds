@@ -11,8 +11,8 @@ private:
     CHSV _colour = CHSV(0, 255, 255);
 
 public:
-    SolidEffect(int leds)
-        : _nLeds(leds)
+    SolidEffect()
+        : _nLeds(GetNumLeds())
     {
     }
 

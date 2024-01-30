@@ -13,8 +13,8 @@ private:
     uint8_t _uHue = 0;
 
 public:
-    BeatsEffect(int leds)
-        : _nLeds(leds)
+    BeatsEffect()
+        : _nLeds(GetNumLeds())
     {
     }
 

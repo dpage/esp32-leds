@@ -42,8 +42,8 @@ private:
 public:
     
     // Lower sparking -> more flicker. Higher sparking -> more consistent flame
-    FireEffect(int size, int cooling = 80, int sparking = 50, int sparks = 3, int sparkHeight = 4, bool reversed = true, bool mirrored = true) 
-        : _iSize(size),
+    FireEffect(int cooling = 80, int sparking = 50, int sparks = 3, int sparkHeight = 4, bool reversed = true, bool mirrored = true) 
+        : _iSize(GetNumLeds()),
           _iCooling(cooling),
           _iSparks(sparks),
           _iSparkHeight(sparkHeight),
@@ -54,7 +54,7 @@ public:
         if (_bMirrored)
             _iSize = _iSize / 2;
 
-        heat = new byte[size] { 0 };
+        heat = new byte[_iSize] { 0 };
     }
 
     ~FireEffect()

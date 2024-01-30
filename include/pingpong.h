@@ -13,8 +13,8 @@ private:
     boolean _reverse = false;
 
 public:
-    PingPongEffect(int leds)
-        : _nLeds(leds)
+    PingPongEffect()
+        : _nLeds(GetNumLeds())
     {
     }
 

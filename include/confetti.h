@@ -13,8 +13,8 @@ private:
     uint8_t _uHue = 0;
 
 public:
-    ConfettiEffect(int leds)
-        : _nLeds(leds)
+    ConfettiEffect()
+        : _nLeds(GetNumLeds())
     {
     }
 

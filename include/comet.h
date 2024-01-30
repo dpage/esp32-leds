@@ -22,8 +22,8 @@ private:
     int _nLeds;
 
 public:
-    CometEffect(int leds)
-        : _nLeds(leds)
+    CometEffect()
+        : _nLeds(GetNumLeds())
     {
     }
 
