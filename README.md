@@ -22,6 +22,13 @@ with a pulldown resistor to ground (say, 100K). This will bring the pin high
 when external power is present, but not when running on USB power, allowing
 the LEDs to run at full brightness, or a safe brightness when using USB only.
 
+It is also possible to disable power management entirely, by browsing to 
+*/setup* on the ESP32's web interface once up and running. This is appropriate
+when the LED strip is powered independently of the ESP32, that is, there is no
+power fed to the LED strip from the module itself. This can be achieved by 
+powering the strip directly from the external power supply, and also feeding
+that power to a voltage regulator module to power the module.
+
 ## Hardware
 
 The *hardware/* sub directory contains a case design as a FreeCAD drawing,
