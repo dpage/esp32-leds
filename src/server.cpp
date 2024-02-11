@@ -64,6 +64,7 @@ void handleRoot()
     webApp += "</form>";
 
     webApp += "<p><a href=\"/setup\">Setup</a></p>";
+    webApp += "<p>Version: " + String(FIRMWARE_VERSION) + "</p>";
     webApp += "</center></body></html>";
 
     // Finish up
@@ -146,6 +147,8 @@ void handleSetup()
     }
     else
         webApp += "<p><a href=\"/\">Home</a></p>";
+
+    webApp += "<p>Version: " + String(FIRMWARE_VERSION) + "</p>";
     webApp += "</center></body></html>";
 
     // Finish up
