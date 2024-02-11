@@ -4,7 +4,7 @@
 // Main
 
 // Firmward version
-#define FIRMWARE_VERSION "0.7"
+#define FIRMWARE_VERSION "0.8"
 
 // LED strip config
 #define DEFAULT_NUM_LEDS 300
@@ -19,5 +19,6 @@ int GetNumLeds();
 void SetNumLeds(int leds);
 boolean GetPowerManagement();
 void SetPowerManagement(boolean enabled);
+boolean GetExternalPower();
 
 #endif

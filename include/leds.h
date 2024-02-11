@@ -12,6 +12,8 @@ const char *GetEffectNameById(int id);
 void SetEffectId(int id);
 void NextEffect();
 int GetBrightness();
-void setBrightness(int brightness);
+void SetBrightness(int brightness);
+int GetMaxPower();
+void SetMaxPower(int power);
 
 #endif

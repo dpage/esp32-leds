@@ -12,6 +12,7 @@
 #include <ArduinoOTA.h>
 
 #define FASTLED_INTERNAL
+#define FASTLED_ALLOW_INTERRUPTS 0
 #include <FastLED.h>
 #include <Preferences.h>
 
@@ -78,6 +79,13 @@ void SetPowerManagement(boolean enabled)
 }
 
 
+// Are we on external power?
+boolean GetExternalPower()
+{
+    return bExternalPower;
+}
+
+
 // Check to see if we're running on external power or not, and enable safety
 // measures as appropriate
 void checkPowerState()
@@ -100,7 +108,7 @@ void checkPowerState()
             digitalWrite(LED_BUILTIN, LOW);
             bExternalPower = true;
             set_max_power_indicator_LED(0);
-            FastLED.setMaxPowerInMilliWatts(25000);
+            FastLED.setMaxPowerInMilliWatts(GetMaxPower());
         }
     }
     else
@@ -108,7 +116,7 @@ void checkPowerState()
         digitalWrite(LED_BUILTIN, LOW);
         bExternalPower = true;
         set_max_power_indicator_LED(0);
-        FastLED.setMaxPowerInMilliWatts(10000);
+        FastLED.setMaxPowerInMilliWatts(GetMaxPower());
     }
 }
 

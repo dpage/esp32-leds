@@ -91,9 +91,13 @@ void handleSetup()
     {
         SetPowerManagement(atoi(server.arg("PwrMgmt").c_str()) ? true : false);
     }
+    if (server.hasArg("MaxPower") && atoi(server.arg("MaxPower").c_str()) != GetMaxPower())
+    {
+        SetMaxPower(atoi(server.arg("MaxPower").c_str()));
+    }
     if (server.hasArg("Brightness") && atoi(server.arg("Brightness").c_str()) != GetBrightness())
     {
-        setBrightness(atoi(server.arg("Brightness").c_str()));
+        SetBrightness(atoi(server.arg("Brightness").c_str()));
     }
 
     // Render page
@@ -114,7 +118,7 @@ void handleSetup()
         webApp += "<input type=\"text\" id=\"Leds\" name=\"Leds\" value=\"" + String(GetNumLeds()) + "\">";
         webApp += "<label for=\"Hostname\">Hostname:</label>";
         webApp += "<input type=\"text\" id=\"Hostname\" name=\"Hostname\" value=\"" + GetHostname() + "\">";
-        webApp += "<label for=\"PwrMgmt\">Power Management:</label>";
+        webApp += "<label for=\"PwrMgmt\">Active Power Management:</label>";
         webApp += "<select name=\"PwrMgmt\" id=\"PwrMgmt\">";
         if (GetPowerManagement() == true)
         {
@@ -127,6 +131,8 @@ void handleSetup()
             webApp += "<option selected value=\"0\">Disabled</option>";
         }
         webApp += "</select>";
+        webApp += "<label for=\"MaxPower\">Maximum External Power (mW):</label>";
+        webApp += "<input type=\"text\" id=\"MaxPower\" name=\"MaxPower\" value=\"" + String(GetMaxPower()) + "\">";
         webApp += "<label for=\"Brightness\">Brightness (0 - 255):</label>";
         webApp += "<input type=\"text\" id=\"Brightness\" name=\"Brightness\" value=\"" + String(GetBrightness()) + "\">";
         webApp += "<input type = \"submit\" value = \"Submit\">";

@@ -33,7 +33,6 @@ const char *effects[] = {
 };
 
 int effectId = 0;
-int iBrightness = 255;
 
 #include "balls.h"
 #include "comet.h"
@@ -46,6 +45,7 @@ int iBrightness = 255;
 #include "confetti.h"
 #include "juggle.h"
 #include "beats.h"
+
 
 int GetNumEffects()
 {
@@ -79,11 +79,13 @@ void saveEffect()
     preferences.end();
 }
 
+
 void SetEffectId(int id) 
 {
     effectId = id;
     saveEffect();
 }
+
 
 void NextEffect()
 {
@@ -94,13 +96,22 @@ void NextEffect()
     saveEffect();
 }
 
+
 // Brightness
 int GetBrightness()
 {
-    return iBrightness;
+    Preferences preferences;
+    int brightness;
+
+    preferences.begin("ESP32-LEDs", true);
+    brightness = preferences.getInt("Brightness", 255);
+    preferences.end();
+
+    return brightness;
 }
 
-void setBrightness(int brightness)
+
+void SetBrightness(int brightness)
 {
     Preferences preferences;
 
@@ -114,19 +125,47 @@ void setBrightness(int brightness)
     preferences.putInt("Brightness", brightness);
     preferences.end();
 
-    iBrightness = brightness;
+    FastLED.setBrightness(brightness);
 }
+
+
+// Max Power
+int GetMaxPower()
+{
+    Preferences preferences;
+    int brightness;
+
+    preferences.begin("ESP32-LEDs", true);
+    brightness = preferences.getInt("MaxPower", 10000);
+    preferences.end();
+
+    return brightness;
+}
+
+
+void SetMaxPower(int power)
+{
+    Preferences preferences;
+
+    preferences.begin("ESP32-LEDs", false);
+    preferences.putInt("MaxPower", power);
+    preferences.end();
+
+    if (GetExternalPower())
+        FastLED.setMaxPowerInMilliWatts(power);
+}
+
 
 // Initialise the LEDs
 void initLEDs()
 {
     FastLED.addLeds<WS2812B, LED_PIN, GRB>(fbLEDs, GetNumLeds());
-    FastLED.setBrightness(255);
 
-    // Load the last effect
+    // Load the last effect & brightness
     Preferences preferences;
     preferences.begin("ESP32-LEDs", true);
     effectId = preferences.getInt("effectId", 0);
+    FastLED.setBrightness(preferences.getInt("Brightness", 255));
     preferences.end();
 
     // Clear everything
@@ -247,6 +286,6 @@ void LedLoop(void *pvParameters)
         }
 
         // Display the frame
-        FastLED.show(iBrightness);
+        FastLED.show();
     }
 }
