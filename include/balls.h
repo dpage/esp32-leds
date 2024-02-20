@@ -62,7 +62,7 @@ private:
 
 public:
     BallsEffect(size_t ballCount = 3, byte fade = 0, bool mirrored = false, double speedKnob = 4.0)
-        : _cLength(GetNumLeds() - 1), // Reserve one LED for floating point fraction draw
+        : _cLength(GetNumLeds()),
           _cBalls(ballCount),
           _byteFade(fade),
           _bMirrored(mirrored),
